@@ -52,11 +52,11 @@ add_executable( ${PROJECT_NAME}
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC
-        ${SOURCE_DIR}/motors/public
+        ${SOURCE_DIR}/uni-tasks/public
     PRIVATE
-        ${SOURCE_DIR}/motors/src
-        ${SOURCE_DIR}/motors/tests/unit
-        ${SOURCE_DIR}/motors/tests/integration
+        ${SOURCE_DIR}/uni-tasks/src
+        ${SOURCE_DIR}/uni-tasks/tests/unit
+        ${SOURCE_DIR}/uni-tasks/tests/integration
 )
 
 target_link_libraries( ${PROJECT_NAME}
