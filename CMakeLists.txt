@@ -1,4 +1,4 @@
-project( motors )
+project( uni-tasks )
 
 set( HEADERS
     "public/uni/Types.hpp"
