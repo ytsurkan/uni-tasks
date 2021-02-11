@@ -7,6 +7,9 @@ set( HEADERS
     "public/uni/common/RequestFactory.hpp"
     "public/uni/common/Runtime.hpp"
     "public/uni/common/PollEngine.hpp"
+    "public/uni/concurrency/Queue.hpp"
+    "public/uni/concurrency/ThreadPool.hpp"
+    "public/uni/concurrency/ThreadPoolImpl.hpp"
     "public/uni/tasks/ITask.hpp"
     "public/uni/tasks/TaskBase.hpp"
     "public/uni/tasks/Task.hpp"
@@ -21,9 +24,6 @@ set( SOURCES
     "src/uni/common/Request.cpp"
     "src/uni/common/Runtime.cpp"
     "src/uni/common/PollEngine.cpp"
-    "src/uni/concurrency/Queue.hpp"
-    "src/uni/concurrency/ThreadPool.hpp"
-    "src/uni/concurrency/ThreadPoolImpl.hpp"
     "src/uni/tasks/TaskBase.cpp"
     "src/uni/utils/Utils.cpp"
 )
@@ -35,8 +35,6 @@ set( TESTS_SOURCES
     "tests/unit/uni/concurrency/ThreadPoolUnitTests.cpp"
     "tests/unit/uni/common/TaskDispatcherUnitTests.hpp"
     "tests/unit/uni/common/TaskDispatcherUnitTests.cpp"
-    "tests/integration/uni/common/PollEngineIntegrationTests.hpp"
-    "tests/integration/uni/common/PollEngineIntegrationTests.cpp"
     "tests/integration/uni/common/DemoComponent.hpp"
     "tests/integration/uni/common/DemoComponent.cpp"
     "tests/integration/uni/common/DemoComponentListener.hpp"
@@ -46,25 +44,30 @@ set( TESTS_SOURCES
 
 #treat_all_warnings_as_errors()
 
-add_executable( ${PROJECT_NAME}
+add_library( ${PROJECT_NAME} SHARED
     ${HEADERS}
     ${SOURCES}
-    ${TESTS_SOURCES}
+#    ${TESTS_SOURCES}
 )
+
+#add_executable( ${PROJECT_NAME}
+#    ${HEADERS}
+#    ${SOURCES}
+#    ${TESTS_SOURCES}
+#)
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC
         ${SOURCE_DIR}/uni-tasks/public
     PRIVATE
         ${SOURCE_DIR}/uni-tasks/src
-        ${SOURCE_DIR}/uni-tasks/tests/unit
-        ${SOURCE_DIR}/uni-tasks/tests/integration
+#        ${SOURCE_DIR}/uni-tasks/tests/unit
+#        ${SOURCE_DIR}/uni-tasks/tests/integration
 )
 
 target_link_libraries( ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_THREAD_LIBS_INIT}
-        #uni-common
 )
 
 set_target_properties( ${PROJECT_NAME}
@@ -73,8 +76,22 @@ set_target_properties( ${PROJECT_NAME}
 )
 
 install( TARGETS ${PROJECT_NAME}
-    ARCHIVE DESTINATION usr/lib
-    LIBRARY DESTINATION usr/lib
-    PUBLIC_HEADER DESTINATION usr/include
-    RUNTIME DESTINATION usr/bin
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+# The trailing slash is important
+install( DIRECTORY ${CMAKE_INSTALL_INCLUDEDIR}/
+         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+add_subdirectory( tests )
+
+#if( CODE_COVERAGE )
+#    generate_coverage( ${PROJECT_NAME} ${PROJECT_NAME}-integrationtests)
+
+#    install( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${COVERAGE_OUTPUT_DIR_NAME}/
+#             DESTINATION ${CMAKE_INSTALL_DOCDIR}/uni/common
+#    )
+#endif( )

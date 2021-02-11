@@ -101,6 +101,9 @@ public:
     {
     }
 
+    /**
+     * @brief Start thread pool.
+     */
     void
     start( )
     {
