@@ -6,7 +6,6 @@
 #include <functional>
 #include <mutex>
 #include <set>
-#include <thread>
 
 #include <iostream>
 
@@ -135,9 +134,9 @@ private:
     }
 
 private:
-    Container m_elements;
-    mutable std::mutex m_mutex;
-    std::condition_variable m_cond;
+    Container m_elements{};
+    mutable std::mutex m_mutex{};
+    std::condition_variable m_cond{};
     bool m_closed{false};
 };
 
@@ -184,7 +183,7 @@ public:
         {
             if ( !empty( lock ) )
             {
-                const auto delay = get_delay_of_begin_element( callback, lock );
+                const auto delay = get_delay_of_first_element( callback, lock );
                 if ( delay <= 0 )
                 {
                     element = std::move( m_elements.extract( m_elements.begin( ) ).value( ) );
@@ -201,7 +200,7 @@ public:
         // Queue is closed. Extract remaining elements and do not accept insertions of new elements.
         while ( !empty( lock ) )
         {
-            const auto delay = get_delay_of_begin_element( callback, lock );
+            const auto delay = get_delay_of_first_element( callback, lock );
             if ( delay <= 0 )
             {
                 element = std::move( m_elements.extract( m_elements.begin( ) ).value( ) );
@@ -222,7 +221,7 @@ public:
         {
             if ( !empty( lock ) )
             {
-                const auto delay = get_delay_of_begin_element( callback, lock );
+                const auto delay = get_delay_of_first_element( callback, lock );
                 if ( delay <= 0 )
                 {
                     return std::move( m_elements.extract( m_elements.begin( ) ).value( ) );
@@ -238,7 +237,7 @@ public:
         // Queue is closed. Extract remaining elements and do not accept insertions of new elements.
         while ( !empty( lock ) )
         {
-            const auto delay = get_delay_of_begin_element( callback, lock );
+            const auto delay = get_delay_of_first_element( callback, lock );
             if ( delay <= 0 )
             {
                 return std::move( m_elements.extract( m_elements.begin( ) ).value( ) );
@@ -330,7 +329,7 @@ private:
 
     template < typename Callback >
     auto
-    get_delay_of_begin_element( const Callback& callback, const std::unique_lock< std::mutex >& )
+    get_delay_of_first_element( const Callback& callback, const std::unique_lock< std::mutex >& )
         -> decltype( callback( std::declval< T >( ) ) ) const
     {
         const T& element = *( m_elements.begin( ) );
@@ -338,9 +337,9 @@ private:
     };
 
 private:
-    Container m_elements;
-    mutable std::mutex m_mutex;
-    std::condition_variable m_cond;
+    Container m_elements{};
+    mutable std::mutex m_mutex{};
+    std::condition_variable m_cond{};
     bool m_closed{false};
 };
 

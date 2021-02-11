@@ -22,6 +22,7 @@ set( SOURCES
     "src/uni/common/PollEngine.cpp"
     "src/uni/concurrency/Queue.hpp"
     "src/uni/concurrency/ThreadPool.hpp"
+    "src/uni/concurrency/ThreadPoolImpl.hpp"
     "src/uni/tasks/TaskBase.cpp"
     "src/uni/utils/Utils.cpp"
 )
@@ -42,7 +43,7 @@ set( TESTS_SOURCES
     "tests/integration/uni/common/DemoComponentIntegrationTests.cpp"
 )
 
-treat_all_warnings_as_errors()
+#treat_all_warnings_as_errors()
 
 add_executable( ${PROJECT_NAME}
     ${HEADERS}
