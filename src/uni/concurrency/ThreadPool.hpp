@@ -2,6 +2,7 @@
 
 #include "uni/concurrency/ThreadPoolImpl.hpp"
 #include "uni/tasks/ITask.hpp"
+#include "uni/tasks/TaskComparators.hpp"
 
 namespace uni
 {

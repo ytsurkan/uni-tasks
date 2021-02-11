@@ -12,6 +12,7 @@ set( HEADERS
     "public/uni/tasks/Task.hpp"
     "public/uni/tasks/MemFnTask.hpp"
     "public/uni/tasks/TaskFactory.hpp"
+    "public/uni/tasks/TaskComparators.hpp"
     "public/uni/utils/Utils.hpp"
 )
 
