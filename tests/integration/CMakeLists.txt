@@ -6,6 +6,10 @@ set( HEADERS
 
 set( SOURCES
     "uni/common/PollEngineTest.cpp"
+    "uni/common/DemoComponentTest.cpp"
+    "uni/common/DemoComponentImpl.cpp"
+    "uni/common/DemoComponentImpl.hpp"
+    "uni/common/DemoComponentListener.hpp"
 )
 
 # treat_all_warnings_as_errors()
