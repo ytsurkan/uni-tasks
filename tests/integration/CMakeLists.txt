@@ -5,7 +5,7 @@ set( HEADERS
 )
 
 set( SOURCES
-    "uni/common/PollEngineIntegrationTests.cpp"
+    "uni/common/PollEngineTest.cpp"
 )
 
 # treat_all_warnings_as_errors()
