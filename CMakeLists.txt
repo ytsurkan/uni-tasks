@@ -20,7 +20,6 @@ set( HEADERS
 )
 
 set( SOURCES
-    "app/main.cpp"
     "src/uni/common/Request.cpp"
     "src/uni/common/Runtime.cpp"
     "src/uni/common/PollEngine.cpp"
@@ -44,7 +43,7 @@ set( TESTS_SOURCES
 
 #treat_all_warnings_as_errors()
 
-add_library( ${PROJECT_NAME} SHARED
+add_library( ${PROJECT_NAME} STATIC
     ${HEADERS}
     ${SOURCES}
 #    ${TESTS_SOURCES}
@@ -68,11 +67,6 @@ target_include_directories( ${PROJECT_NAME}
 target_link_libraries( ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_THREAD_LIBS_INIT}
-)
-
-set_target_properties( ${PROJECT_NAME}
-    PROPERTIES
-    PUBLIC_HEADER "${HEADERS}"
 )
 
 install( TARGETS ${PROJECT_NAME}

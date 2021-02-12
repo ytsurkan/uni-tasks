@@ -5,7 +5,6 @@ set( HEADERS
 )
 
 set( SOURCES
-    "uni/common/PollEngineIntegrationTests.hpp"
     "uni/common/PollEngineIntegrationTests.cpp"
 )
 

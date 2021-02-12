@@ -6,8 +6,8 @@ namespace uni
 {
 namespace common
 {
-PollEngine::PollEngine( Runtime* runtime, const std::string& thread_pool_name )
-    : m_runtime{runtime}
+PollEngine::PollEngine( std::shared_ptr< Runtime > runtime, const std::string& thread_pool_name )
+    : m_runtime{std::move( runtime )}
     , m_thread_pool_name{thread_pool_name}
 {
     if ( nullptr == m_runtime )
@@ -27,7 +27,7 @@ void
 PollEngine::stop( )
 {
     m_running = false;
-    m_runtime->task_dispatcher( ).cancel_pending( m_thread_pool_name, m_poll_request_id );
+    m_runtime->task_dispatcher( ).cancel_pending( m_thread_pool_name, m_poll_request_id.load( ) );
 }
 
 void
@@ -62,7 +62,7 @@ PollEngine::run( )
     task->set_due_time( m_poll_interval_ms );
     m_poll_request_id = utils::create_request_id( );
 
-    dispatcher.dispatch( m_thread_pool_name, m_poll_request_id, std::move( task ) );
+    dispatcher.dispatch( m_thread_pool_name, m_poll_request_id.load( ), std::move( task ) );
 }
 
 }  // namespace common
