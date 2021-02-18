@@ -332,7 +332,7 @@ create_task_ptr( const std::shared_ptr< Object >& object,
                  MemFnPtr< Object, R, Params... > f,
                  Args&&... args )
 {
-    return create_task_ptr( object, ptr2wrapper( f ), std::forward< Args >( args )... );
+    return create_task_ptr( object, utils::ptr2wrapper( f ), std::forward< Args >( args )... );
 }
 
 /**
