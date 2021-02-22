@@ -6,6 +6,7 @@ set( HEADERS
 
 set( SOURCES
     "uni/tasks/TasksUnitTest.cpp"
+    "uni/concurrency/ThreadPoolUnitTests.cpp"
 )
 
 # treat_all_warnings_as_errors()

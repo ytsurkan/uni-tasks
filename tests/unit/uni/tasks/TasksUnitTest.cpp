@@ -23,7 +23,7 @@ TEST_F( TasksTest, test_task_call )
 {
     std::string ss(
         "afadfdfdsgffdsgfsdgfsdgsdfgsdfghfdsgsdhgfsdhdsfhsdfhsdhsdhsdhshshsghsdhsdhsd" );
-    const auto f = [ss]( int a, int b ) {
+    const auto f = [ss]( int32_t a, int32_t b ) {
         const int value = a + b;
         const int expected = 2 + 3;
         ASSERT_EQ( value, expected );
@@ -40,7 +40,7 @@ TEST_F( TasksTest, test_task_call )
 
 TEST_F( TasksTest, test_create_task_from_lambda )
 {
-    const auto f = []( int a, int b ) {
+    const auto f = []( int32_t a, int32_t b ) {
         const int value = a + b;
         const int expected = 2 + 3;
         ASSERT_EQ( value, expected );
@@ -53,7 +53,7 @@ TEST_F( TasksTest, test_create_task_from_lambda )
 namespace
 {
 void
-sum( int first, int second, std::shared_ptr< int > sum )
+sum( int32_t first, int32_t second, std::shared_ptr< int32_t > sum )
 {
     *sum = first + second;
 }
@@ -93,12 +93,12 @@ struct FakeWorker
 
 TEST_F( TasksTest, test_create_task_from_function )
 {
-    auto result = std::make_shared< int >( );
+    auto result = std::make_shared< int32_t >( );
     const int v = 2;
     const auto task = uni::create_task_ptr( sum, 1, v, result );
     ( *task )( );
 
-    const int expected = ( 1 + 2 );
+    const int32_t expected = ( 1 + 2 );
     ASSERT_EQ( expected, *result );
 }
 

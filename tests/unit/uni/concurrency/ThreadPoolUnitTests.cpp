@@ -1,68 +1,26 @@
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include "uni/concurrency/ThreadPool.hpp"
 #include "uni/tasks/TaskFactory.hpp"
 
-#define ASSERT( x )                                                                  \
-    do                                                                               \
-    {                                                                                \
-        if ( !( x ) )                                                                \
-        {                                                                            \
-            std::fprintf( stderr, "Assertion failed: %s:%i\n", __FILE__, __LINE__ ); \
-            std::fflush( stderr );                                                   \
-        }                                                                            \
-    } while ( 0 )
-
-#define ASSERT_EQ( lhs, rhs ) ASSERT( lhs == rhs )
-
-#define ASSERT_LE( lhs, rhs ) ASSERT( lhs <= rhs )
-
-namespace
+namespace unit
 {
-int
-add( int first, int second )
+namespace uni
 {
-    return first + second;
-}
-
-class Listener
+namespace concurrency
 {
-public:
-    static constexpr size_t s_magic_number = 13;
-
-public:
-    void
-    on_calculation_done( int value )
-    {
-        m_result = value;
-    }
-
-    void
-    on_result( int value1, int value2 )
-    {
-        m_result = value1 + value2;
-    }
-
-    void
-    on_result( int value1, int value2 ) const
-    {
-        m_result = value1 + value2 + s_magic_number;
-    }
-
-    void
-    on_result( int value1, int value2, std::promise< size_t > promise )
-    {
-        m_result = value1 + value2;
-        m_promise = std::move( promise );
-        m_promise.set_value( m_result );
-    }
-
-    std::promise< size_t > m_promise;
-    mutable int m_result{};
+class ThreadPoolTest : public ::testing::Test
+{
 };
 
-}  // namespace
+}  // namespace concurrency
+}  // namespace uni
+}  // namespace unit
 
-void
-test_thread_pool_add_and_execute_lambda_task( )
+using unit::uni::concurrency::ThreadPoolTest;
+
+TEST_F( ThreadPoolTest, test_thread_pool_add_and_execute_lambda_task_ptr )
 {
     constexpr auto N = std::size_t{7};
     std::future< std::size_t > task_done_pop[ N ];
@@ -82,16 +40,44 @@ test_thread_pool_add_and_execute_lambda_task( )
         thread_pool.add_task( uni::create_task_ptr( std::move( task ) ) );
     }
 
-    for ( std::size_t i = 0; i < N; ++i )
+    for ( size_t i = 0; i < N; ++i )
     {
-        ASSERT( task_done_pop[ i ].get( ) == i );
+        const size_t expected = i;
+        ASSERT_EQ( task_done_pop[ i ].get( ), expected );
     }
 
     thread_pool.stop( );
 }
 
+namespace
+{
 void
-test_thread_pool_add_and_execute_memfn_task( )
+sum( int32_t first, int32_t second, std::shared_ptr< int32_t > sum )
+{
+    *sum = first + second;
+}
+
+struct FakeWorker
+{
+    void
+    do_1( int32_t value )
+    {
+        m_result = value;
+    }
+
+    void
+    do_2( int32_t value, std::promise< size_t > promise )
+    {
+        m_result = value;
+        promise.set_value( m_result );
+    }
+
+    mutable int m_result{};
+};
+
+}  // namespace
+
+TEST_F( ThreadPoolTest, test_thread_pool_add_and_execute_memfn_task_ptr )
 {
     constexpr auto N = std::size_t{7};
     std::future< std::size_t > task_done_pop[ N ];
@@ -105,37 +91,35 @@ test_thread_pool_add_and_execute_memfn_task( )
     uni::ThreadPool< std::unique_ptr< uni::ITask >, uni::TaskPtrCmp > thread_pool;
     thread_pool.start( );
 
-    Listener foo[ N ];
+    FakeWorker foo[ N ];
     for ( std::size_t i = 0; i < N; ++i )
     {
-        auto task = uni::create_task_ptr(
-            &( foo[ i ] ),
-            uni::MemFnPtrWrapper< void ( Listener::* )( int, int, std::promise< size_t > ) >(
-                &Listener::on_result ),
-            static_cast< int >( i ),
-            static_cast< int >( i ),
-            std::move( task_done_push[ i ] ) );
+        auto task = uni::create_task_ptr( &( foo[ i ] ),
+                                          &FakeWorker::do_2,
+                                          static_cast< int32_t >( i ),
+                                          std::move( task_done_push[ i ] ) );
         thread_pool.add_task( std::move( task ) );
     }
 
-    for ( std::size_t i = 0; i < N; ++i )
+    for ( size_t i = 0; i < N; ++i )
     {
-        ASSERT( task_done_pop[ i ].get( ) == ( i + i ) );
+        const size_t expected = i;
+        ASSERT_EQ( task_done_pop[ i ].get( ), expected );
     }
 
     thread_pool.stop( );
 }
 
-void
-test_thread_pool_of_value_tasks_with_lambda( )
+TEST_F( ThreadPoolTest, test_thread_pool_of_tasks_with_lambda )
 {
     std::string some_value(
         "afadfdfdsgffdsgfsdgfsdgsdfgsdfghfdsgsdhgfsdhdsfhsdfhsdhsdhsdhshshsghsdhsdhsd" );
-    const auto f = [some_value]( int a, int b ) {
-        const int r = a + b;
-        ASSERT_EQ( r, ( 2 + 3 ) );
-        return r;
+    const auto f = [some_value]( int32_t a, int32_t b ) {
+        const int value = a + b;
+        const int expected = 2 + 3;
+        ASSERT_EQ( value, expected );
     };
+
     auto task = uni::create_task( f, 2, 3 );
 
     uni::ThreadPool< decltype( task ), uni::TaskCmp > thread_pool;
@@ -144,25 +128,27 @@ test_thread_pool_of_value_tasks_with_lambda( )
     thread_pool.stop( );
 }
 
-void
-test_thread_pool_of_value_tasks_with_function( )
+TEST_F( ThreadPoolTest, test_thread_pool_of_tasks_with_function )
 {
-    int v1 = 1;
-    auto task = uni::create_task( add, v1, 2 );
+    auto result = std::make_shared< int32_t >( );
+    const int32_t v1 = 1;
+    auto task = uni::create_task( sum, v1, 2, result );
 
     uni::ThreadPool< decltype( task ), uni::TaskCmp > thread_pool;
     thread_pool.start( );
     thread_pool.add_task( std::move( task ) );
     thread_pool.stop( );
+
+    const int32_t expected = ( 1 + 2 );
+    ASSERT_EQ( expected, *result );
 }
 
-void
-test_thread_pool_of_value_tasks_with_memfn( )
+TEST_F( ThreadPoolTest, test_thread_pool_of_tasks_with_memfn )
 {
-    const int expected = 42;
-    Listener foo;
+    const int32_t expected = 42;
+    FakeWorker foo;
 
-    auto task = uni::create_task( &foo, &Listener::on_calculation_done, expected );
+    auto task = uni::create_task( &foo, &FakeWorker::do_1, expected );
     uni::ThreadPool< decltype( task ), uni::TaskCmp > thread_pool;
     thread_pool.start( );
     thread_pool.add_task( std::move( task ) );
@@ -170,14 +156,4 @@ test_thread_pool_of_value_tasks_with_memfn( )
     thread_pool.stop( );
 
     ASSERT_EQ( expected, foo.m_result );
-}
-
-void
-thread_pool_tests( )
-{
-    test_thread_pool_of_value_tasks_with_lambda( );
-    test_thread_pool_of_value_tasks_with_function( );
-    test_thread_pool_of_value_tasks_with_memfn( );
-    test_thread_pool_add_and_execute_lambda_task( );
-    test_thread_pool_add_and_execute_memfn_task( );
 }
