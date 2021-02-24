@@ -1,94 +1,63 @@
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include "uni/common/TaskDispatcher.hpp"
 
-#define ASSERT( x )                                                                  \
-    do                                                                               \
-    {                                                                                \
-        if ( !( x ) )                                                                \
-        {                                                                            \
-            std::fprintf( stderr, "Assertion failed: %s:%i\n", __FILE__, __LINE__ ); \
-            std::fflush( stderr );                                                   \
-        }                                                                            \
-    } while ( 0 )
+namespace unit
+{
+namespace uni
+{
+namespace common
+{
+class TaskDispatcherTest : public ::testing::Test
+{
+};
 
-#define ASSERT_EQ( lhs, rhs ) ASSERT( lhs == rhs )
+}  // namespace common
+}  // namespace uni
+}  // namespace unit
 
-#define ASSERT_LE( lhs, rhs ) ASSERT( lhs <= rhs )
+using unit::uni::common::TaskDispatcherTest;
 
 namespace
 {
-class Listener
+struct FakeWorker
 {
-public:
     static constexpr size_t s_magic_number = 13;
 
-public:
     void
-    on_calculation_done( int value )
+    do_1( int32_t value )
     {
         m_result = value;
     }
 
     void
-    on_result( int value1, int value2 )
+    do_2( int32_t value1, int32_t value2 )
     {
         m_result = value1 + value2;
     }
 
     void
-    on_result( int value1, int value2 ) const
+    do_2( int32_t value1, int32_t value2 ) const
     {
         m_result = value1 + value2 + s_magic_number;
     }
-
-    void
-    on_result( int value1, int value2, std::promise< size_t > promise )
-    {
-        m_result = value1 + value2;
-        m_promise = std::move( promise );
-        m_promise.set_value( m_result );
-    }
-
-    std::promise< size_t > m_promise;
-    mutable int m_result{};
+    mutable int32_t m_result{};
 };
 
-template < typename F >
-struct FunctionWrapper;
-
-template < typename R, typename... Args >
-struct FunctionWrapper< R( Args... ) >
+void
+sum( int32_t first, int32_t second, std::shared_ptr< int32_t > sum )
 {
-    FunctionWrapper( const std::function< R( Args... ) >& f, R& result )
-        : m_f{f}
-        , m_result{result}
-    {
-    }
-
-    R
-    operator( )( Args... args )
-    {
-        m_result = m_f( std::forward< Args >( args )... );
-        return m_result;
-    }
-
-    std::function< R( Args... ) > m_f;
-    R& m_result;
-};
-
-int
-add( int first, int second )
-{
-    return first + second;
+    *sum = first + second;
 }
 }  // namespace
 
-void
-test_execute_lambda( )
+TEST_F( TaskDispatcherTest, test_execute_lambda )
 {
-    const auto f = []( int a, int b ) {
-        const int r = a + b;
-        ASSERT_EQ( r, ( 10 + 10 ) );
-        return r;
+    const auto f = []( int32_t a, int32_t b ) {
+        const int32_t value = a + b;
+        const int32_t expected = 2 + 3;
+        ASSERT_EQ( value, expected );
     };
 
     uni::TaskDispatcher dispatcher;
@@ -101,23 +70,22 @@ test_execute_lambda( )
         async_executed = true;
     };
 
-    const int a = 10;
-    const bool sync_executed = dispatcher.dispatch_or_execute( "background", call_wrapper, a, 10 );
+    const int32_t a = 2;
+    const bool sync_executed = dispatcher.dispatch_or_execute( "background", call_wrapper, a, 3 );
     dispatcher.stop( );
 
     ASSERT_EQ( sync_executed, false );
     ASSERT_EQ( async_executed, true );
 }
 
-void
-test_dispatch_lambda( )
+TEST_F( TaskDispatcherTest, test_dispatch_lambda )
 {
     bool async_executed{false};
-    const auto f = [&]( int a, int b ) {
-        const int r = a + b;
-        ASSERT_EQ( r, ( 10 + 10 ) );
+    const auto f = [&]( int32_t a, int32_t b ) {
+        const int32_t value = a + b;
+        const int32_t expected = 10 + 10;
+        ASSERT_EQ( value, expected );
         async_executed = true;
-        return r;
     };
 
     uni::TaskDispatcher dispatcher;
@@ -133,72 +101,61 @@ test_dispatch_lambda( )
     ASSERT_EQ( async_executed, true );
 }
 
-void
-test_execute_function( )
+TEST_F( TaskDispatcherTest, test_execute_function )
 {
-    int result = 0;
-    FunctionWrapper< decltype( add ) > fw( add, result );
-
+    auto result = std::make_shared< int32_t >( );
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
 
         bool async_executed{false};
-        const auto call_wrapper = [&]( int x, int y ) {
-            const bool executed = dispatcher.dispatch_or_execute( "background", fw, x, y );
+        const auto call_wrapper = [&async_executed, &dispatcher](
+                                      int32_t x, int32_t y, std::shared_ptr< int32_t >& result ) {
+            const bool executed = dispatcher.dispatch_or_execute( "background", sum, x, y, result );
             ASSERT_EQ( executed, true );
-            async_executed = true;
+            async_executed = executed;
         };
 
-        const int a = 1;
-        const int b = 2;
-        dispatcher.dispatch_or_execute( "background", call_wrapper, a, b );
+        const int32_t a = 1;
+        const int32_t b = 2;
+        dispatcher.dispatch_or_execute( "background", call_wrapper, a, b, result );
         dispatcher.stop( );
 
         ASSERT_EQ( async_executed, true );
     }
 
-    const int expected = ( 1 + 2 );
-    ASSERT_EQ( expected, result );
+    const int32_t expected = ( 1 + 2 );
+    ASSERT_EQ( expected, *result );
 }
 
-void
-test_dispatch_function( )
+TEST_F( TaskDispatcherTest, test_dispatch_function )
 {
-    int result1 = 0;
-    int result2 = 0;
+    auto result = std::make_shared< int32_t >( );
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
 
-        FunctionWrapper< decltype( add ) > fw( add, result1 );
-        const bool executed = dispatcher.dispatch_or_execute( "background", fw, 1, 2 );
+        const bool executed = dispatcher.dispatch_or_execute( "background", sum, 1, 2, result );
         ASSERT_EQ( executed, false );
 
-        dispatcher.dispatch(
-            "background", FunctionWrapper< decltype( add ) >( add, result2 ), 3, 4 );
         dispatcher.stop( );
     }
 
-    const int expected1 = ( 1 + 2 );
-    ASSERT_EQ( expected1, result1 );
-
-    const int expected2 = ( 3 + 4 );
-    ASSERT_EQ( expected2, result2 );
+    const int expected = ( 1 + 2 );
+    ASSERT_EQ( expected, *result );
 }
 
-void
-test_execute_memfn( )
+TEST_F( TaskDispatcherTest, test_execute_memfn )
 {
-    Listener foo;
-    const int expected = 42;
+    FakeWorker foo;
+    const int32_t expected = 42;
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
 
         auto call_wrapper = [&]( int a ) {
-            const bool executed = dispatcher.dispatch_or_execute(
-                "background", &foo, &Listener::on_calculation_done, a );
+            const bool executed
+                = dispatcher.dispatch_or_execute( "background", &foo, &FakeWorker::do_1, a );
             ASSERT_EQ( executed, true );
         };
 
@@ -209,22 +166,21 @@ test_execute_memfn( )
     ASSERT_EQ( expected, foo.m_result );
 }
 
-void
-test_dispatch_memfn( )
+TEST_F( TaskDispatcherTest, test_dispatch_memfn )
 {
-    Listener foo1;
-    const int expected1 = 42;
-    Listener foo2;
-    const int expected2 = 13;
+    FakeWorker foo1;
+    const int32_t expected1 = 42;
+    FakeWorker foo2;
+    const int32_t expected2 = 13;
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
 
-        const bool executed = dispatcher.dispatch_or_execute(
-            "background", &foo1, &Listener::on_calculation_done, expected1 );
+        const bool executed
+            = dispatcher.dispatch_or_execute( "background", &foo1, &FakeWorker::do_1, expected1 );
         ASSERT_EQ( executed, false );
 
-        dispatcher.dispatch( "background", &foo2, &Listener::on_calculation_done, expected2 );
+        dispatcher.dispatch( "background", &foo2, &FakeWorker::do_1, expected2 );
         dispatcher.stop( );
     }
 
@@ -232,12 +188,11 @@ test_dispatch_memfn( )
     ASSERT_EQ( expected2, foo2.m_result );
 }
 
-void
-test_execute_const_memfn( )
+TEST_F( TaskDispatcherTest, test_execute_const_memfn )
 {
-    Listener foo;
-    const int a = 42;
-    const int b = 1;
+    FakeWorker foo;
+    const int32_t a = 42;
+    const int32_t b = 1;
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
@@ -245,8 +200,8 @@ test_execute_const_memfn( )
             const bool executed = dispatcher.dispatch_or_execute(
                 "background",
                 &foo,
-                uni::MemFnPtrWrapper< void ( Listener::* )( int, int ) const >(
-                    &Listener::on_result ),
+                uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+                    &FakeWorker::do_2 ),
                 x,
                 y );
             ASSERT_EQ( executed, true );
@@ -256,17 +211,16 @@ test_execute_const_memfn( )
         dispatcher.stop( );
     }
 
-    const int expected = ( a + b + Listener::s_magic_number );
+    const int32_t expected = ( a + b + FakeWorker::s_magic_number );
     ASSERT_EQ( expected, foo.m_result );
 }
 
-void
-test_dispatch_const_memfn( )
+TEST_F( TaskDispatcherTest, test_dispatch_const_memfn )
 {
-    Listener foo1;
-    Listener foo2;
-    const int a = 42;
-    const int b = 1;
+    FakeWorker foo1;
+    FakeWorker foo2;
+    const int32_t a = 42;
+    const int32_t b = 1;
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
@@ -274,7 +228,8 @@ test_dispatch_const_memfn( )
         const bool executed = dispatcher.dispatch_or_execute(
             "background",
             &foo1,
-            uni::MemFnPtrWrapper< void ( Listener::* )( int, int ) const >( &Listener::on_result ),
+            uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+                &FakeWorker::do_2 ),
             a,
             b );
         ASSERT_EQ( executed, false );
@@ -282,28 +237,28 @@ test_dispatch_const_memfn( )
         dispatcher.dispatch(
             "background",
             &foo2,
-            uni::MemFnPtrWrapper< void ( Listener::* )( int, int ) const >( &Listener::on_result ),
+            uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+                &FakeWorker::do_2 ),
             a,
             b );
         dispatcher.stop( );
     }
 
-    const int expected = ( a + b + Listener::s_magic_number );
+    const int32_t expected = ( a + b + FakeWorker::s_magic_number );
     ASSERT_EQ( expected, foo1.m_result );
     ASSERT_EQ( expected, foo2.m_result );
 }
 
-void
-test_execute_memfn_of_sharedptr_object( )
+TEST_F( TaskDispatcherTest, test_execute_memfn_of_sharedptr_object )
 {
-    const auto sp = std::make_shared< Listener >( );
-    const int expected = 42;
+    const auto sp = std::make_shared< FakeWorker >( );
+    const int32_t expected = 42;
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
         auto call_wrapper = [&]( int x ) {
-            const bool executed = dispatcher.dispatch_or_execute(
-                "background", sp, &Listener::on_calculation_done, x );
+            const bool executed
+                = dispatcher.dispatch_or_execute( "background", sp, &FakeWorker::do_1, x );
             ASSERT_EQ( executed, true );
         };
 
@@ -314,16 +269,15 @@ test_execute_memfn_of_sharedptr_object( )
     ASSERT_EQ( expected, sp->m_result );
 }
 
-void
-test_dispatch_memfn_of_sharedptr_object( )
+TEST_F( TaskDispatcherTest, test_dispatch_memfn_of_sharedptr_object )
 {
-    const auto sp = std::make_shared< Listener >( );
-    const int expected = 42;
+    const auto sp = std::make_shared< FakeWorker >( );
+    const int32_t expected = 42;
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
-        const bool executed = dispatcher.dispatch_or_execute(
-            "background", sp, &Listener::on_calculation_done, expected );
+        const bool executed
+            = dispatcher.dispatch_or_execute( "background", sp, &FakeWorker::do_1, expected );
         dispatcher.stop( );
         ASSERT_EQ( executed, false );
     }
@@ -331,12 +285,11 @@ test_dispatch_memfn_of_sharedptr_object( )
     ASSERT_EQ( expected, sp->m_result );
 }
 
-void
-test_execute_const_memfn_of_sharedptr_object( )
+TEST_F( TaskDispatcherTest, test_execute_const_memfn_of_sharedptr_object )
 {
-    const auto sp = std::make_shared< Listener >( );
-    const int a = 42;
-    const int b = 1;
+    const auto sp = std::make_shared< FakeWorker >( );
+    const int32_t a = 42;
+    const int32_t b = 1;
     {
         uni::TaskDispatcher dispatcher;
         dispatcher.start( );
@@ -344,8 +297,8 @@ test_execute_const_memfn_of_sharedptr_object( )
             const bool executed = dispatcher.dispatch_or_execute(
                 "background",
                 sp,
-                uni::MemFnPtrWrapper< void ( Listener::* )( int, int ) const >(
-                    &Listener::on_result ),
+                uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+                    &FakeWorker::do_2 ),
                 x,
                 y );
             ASSERT_EQ( executed, true );
@@ -355,22 +308,6 @@ test_execute_const_memfn_of_sharedptr_object( )
         dispatcher.stop( );
     }
 
-    const int expected = ( a + b + Listener::s_magic_number );
+    const int32_t expected = ( a + b + FakeWorker::s_magic_number );
     ASSERT_EQ( expected, sp->m_result );
-}
-
-void
-task_dispatcher_tests( )
-{
-    test_execute_lambda( );
-    test_dispatch_lambda( );
-    test_execute_function( );
-    test_dispatch_function( );
-    test_execute_memfn( );
-    test_dispatch_memfn( );
-    test_execute_const_memfn( );
-    test_dispatch_const_memfn( );
-    test_execute_memfn_of_sharedptr_object( );
-    test_dispatch_memfn_of_sharedptr_object( );
-    test_execute_const_memfn_of_sharedptr_object( );
 }

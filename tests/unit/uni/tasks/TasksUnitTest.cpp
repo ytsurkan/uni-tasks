@@ -41,8 +41,8 @@ TEST_F( TasksTest, test_task_call )
 TEST_F( TasksTest, test_create_task_from_lambda )
 {
     const auto f = []( int32_t a, int32_t b ) {
-        const int value = a + b;
-        const int expected = 2 + 3;
+        const int32_t value = a + b;
+        const int32_t expected = 2 + 3;
         ASSERT_EQ( value, expected );
     };
 
@@ -94,7 +94,7 @@ struct FakeWorker
 TEST_F( TasksTest, test_create_task_from_function )
 {
     auto result = std::make_shared< int32_t >( );
-    const int v = 2;
+    const int32_t v = 2;
     const auto task = uni::create_task_ptr( sum, 1, v, result );
     ( *task )( );
 
