@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+#include <optional>
 #include <stdexcept>
 #include <utility>
 
@@ -11,21 +13,6 @@ namespace utils
 {
 RequestId create_request_id( );
 SequenceId create_sequence_id( );
-
-// namespace details
-//{
-// template<typename T>
-// struct IsSharedPointerImpl : std::false_type
-//{};
-
-// template<typename T>
-// struct IsSharedPointerImpl<std::shared_ptr<T>> : std::true_type
-//{
-//    using Type = T;
-//};
-//}  // namespace details
-// template<typename T>
-// using IsSharedPointer = details::IsSharedPointerImpl<T>;
 
 // TODO: Use C++17 std::apply, std::invoke instead of apply, invoke declared above.
 
@@ -91,6 +78,22 @@ ptr2wrapper( ConstMemFnPtr< Object, R, Params... > ptr )
     return ptr;
 }
 
+// TODO: Maybe move to other file
+template < typename T >
+T&
+get_value( std::optional< T >& optional )
+{
+    return *optional;
+}
+
+template < typename T >
+T&
+get_value( std::optional< std::unique_ptr< T > >& optional )
+{
+    return ( *( *optional ) );
+}
+
+// TODO: Move to Asserts.hpp
 inline void
 Expects( bool condition, const char* msg )
 {

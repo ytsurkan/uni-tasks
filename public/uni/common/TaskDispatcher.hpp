@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "uni/concurrency/ThreadPool.hpp"
+#include "uni/tasks/TaskComparators.hpp"
 #include "uni/tasks/TaskFactory.hpp"
 
 namespace uni

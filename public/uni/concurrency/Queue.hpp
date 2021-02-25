@@ -175,44 +175,6 @@ public:
     }
 
     template < typename Callback >
-    OperationStatus
-    wait_pop( T& element, Callback callback )
-    {
-        std::unique_lock< std::mutex > lock( m_mutex );
-        while ( !closed( lock ) )
-        {
-            if ( !empty( lock ) )
-            {
-                const auto delay = get_delay_of_first_element( callback, lock );
-                if ( delay <= 0 )
-                {
-                    element = std::move( m_elements.extract( m_elements.begin( ) ).value( ) );
-                    return OperationStatus::success;
-                }
-                m_cond.wait_for( lock, std::chrono::milliseconds( delay ) );
-            }
-            else
-            {
-                m_cond.wait( lock, [&]( ) { return is_not_empty_or_closed( ); } );
-            }
-        }
-
-        // Queue is closed. Extract remaining elements and do not accept insertions of new elements.
-        while ( !empty( lock ) )
-        {
-            const auto delay = get_delay_of_first_element( callback, lock );
-            if ( delay <= 0 )
-            {
-                element = std::move( m_elements.extract( m_elements.begin( ) ).value( ) );
-                return OperationStatus::success;
-            }
-            m_cond.wait_for( lock, std::chrono::milliseconds( delay ) );
-        }
-        return OperationStatus::closed;
-    }
-
-    // TODO: Merge both wait_pop functions to one.
-    template < typename Callback >
     std::optional< T >
     wait_pop( Callback callback )
     {
@@ -329,7 +291,7 @@ private:
 
     template < typename Callback >
     auto
-    get_delay_of_first_element( const Callback& callback, const std::unique_lock< std::mutex >& )
+    get_delay_of_first_element( Callback callback, const std::unique_lock< std::mutex >& )
         -> decltype( callback( std::declval< T >( ) ) ) const
     {
         const T& element = *( m_elements.begin( ) );

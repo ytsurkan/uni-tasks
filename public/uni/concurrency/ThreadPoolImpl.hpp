@@ -5,6 +5,8 @@
 
 #include "uni/Types.hpp"
 #include "uni/concurrency/Queue.hpp"
+#include "uni/tasks/TaskUtils.hpp"
+#include "uni/utils/Utils.hpp"
 
 namespace uni
 {
@@ -20,7 +22,7 @@ struct ThreadPoolStoppedException : public std::exception
 template < typename TaskType, typename TaskCmp >
 class ThreadPoolImpl
 {
-protected:
+public:
     explicit ThreadPoolImpl( size_t threads_count )
         : m_threads_count{threads_count}
     {
@@ -94,13 +96,39 @@ protected:
             [request_id]( const TaskType& task ) { return request_id == task->request_id( ); } );
     }
 
-    virtual void worker_thread_impl( ) = 0;
-
 private:
     void
     worker_thread( )
     {
-        worker_thread_impl( );
+        while ( true )
+        {
+            try
+            {
+                auto task_optional = this->m_queue.wait_pop( &tasks::get_task_delay< TaskType > );
+                if ( !task_optional )
+                {
+                    return;
+                }
+
+                try
+                {
+                    // TODO: Add logging
+                    // std::cerr << "run() id=" << task_optional->request_id( ) << std::endl;
+                    auto& task = utils::get_value( task_optional );
+                    task( );
+                }
+                catch ( const std::exception& error )
+                {
+                    // TODO: log exception
+                    std::cerr << "Task failed with error: " << error.what( ) << std::endl;
+                }
+            }
+            catch ( const std::exception& )
+            {
+                // TODO: log exception
+                return;  // std::terminate(); ???
+            }
+        }
     }
 
     void
@@ -155,7 +183,7 @@ private:
         }
     }
 
-protected:
+private:
     Queue< TaskType, std::set< TaskType, TaskCmp > > m_queue{};
     const size_t m_threads_count{0};
     std::atomic< bool > m_started{false};

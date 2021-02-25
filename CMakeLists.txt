@@ -16,7 +16,9 @@ set( HEADERS
     "public/uni/tasks/MemFnTask.hpp"
     "public/uni/tasks/TaskFactory.hpp"
     "public/uni/tasks/TaskComparators.hpp"
+    "public/uni/tasks/TaskUtils.hpp"
     "public/uni/utils/Utils.hpp"
+    "public/uni/utils/TypeTraits.hpp"
 )
 
 set( SOURCES
