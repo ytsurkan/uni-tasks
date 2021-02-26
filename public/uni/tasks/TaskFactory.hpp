@@ -2,7 +2,7 @@
 
 #include "uni/utils/Utils.hpp"
 
-#include "uni/tasks/MemFnTask.hpp"
+#include "uni/tasks/MemberFnTask.hpp"
 #include "uni/tasks/Task.hpp"
 
 namespace uni {
