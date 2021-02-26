@@ -24,7 +24,7 @@ template < typename Object, typename F, typename... Args >
 auto
 create_task_impl( Object* object, F f, Args&&... args )
 {
-    return MemFnTask< Object, std::decay_t< F >, Args... >(
+    return MemberFnTask< Object, std::decay_t< F >, Args... >(
         object, f, std::forward< Args >( args )... );
 }
 
@@ -32,7 +32,7 @@ template < typename Object, typename F, typename... Args >
 auto
 create_task_impl( Object&& object, F f, Args&&... args )
 {
-    return MemFnTask< std::decay_t< Object >, std::decay_t< F >, Args... >(
+    return MemberFnTask< std::decay_t< Object >, std::decay_t< F >, Args... >(
         std::forward< Object >( object ), f, std::forward< Args >( args )... );
 }
 
@@ -48,7 +48,7 @@ template < typename Object, typename F, typename... Args >
 std::unique_ptr< ITask >
 create_task_ptr_impl( Object* object, F f, Args&&... args )
 {
-    return std::make_unique< MemFnTask< Object, std::decay_t< F >, Args... > >(
+    return std::make_unique< MemberFnTask< Object, std::decay_t< F >, Args... > >(
         object, f, std::forward< Args >( args )... );
 }
 
@@ -56,7 +56,7 @@ template < typename Object, typename F, typename... Args >
 std::unique_ptr< ITask >
 create_task_ptr_impl( Object&& object, F f, Args&&... args )
 {
-    return std::make_unique< MemFnTask< std::decay_t< Object >, std::decay_t< F >, Args... > >(
+    return std::make_unique< MemberFnTask< std::decay_t< Object >, std::decay_t< F >, Args... > >(
         std::forward< Object >( object ), f, std::forward< Args >( args )... );
 }
 

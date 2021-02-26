@@ -30,9 +30,6 @@ TEST_F( PollEngineTest, test_poll_engine_callback )
     {
         uni::common::PollEngine poll_engine( runtime );
 
-        constexpr uni::TimeInterval POLL_INTERVAL_MS = 100;
-        poll_engine.set_poll_interval( POLL_INTERVAL_MS );
-
         static const auto START_TIME = std::chrono::steady_clock::now( );
 
         auto poll_intervals_from_start_ptr = std::make_shared< std::vector< size_t > >( );
@@ -44,6 +41,9 @@ TEST_F( PollEngineTest, test_poll_engine_callback )
             auto& poll_intervals_from_start = *poll_intervals_from_start_ptr;
             poll_intervals_from_start.push_back( timeout_ms.count( ) );
         };
+
+        constexpr uni::TimeInterval POLL_INTERVAL_MS = 100;
+        poll_engine.set_poll_interval( POLL_INTERVAL_MS );
         poll_engine.set_poll_callback( std::move( callback ) );
         poll_engine.start( );
 

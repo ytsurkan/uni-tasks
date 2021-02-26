@@ -11,9 +11,11 @@ set( HEADERS
     "public/uni/concurrency/ThreadPool.hpp"
     "public/uni/concurrency/ThreadPoolImpl.hpp"
     "public/uni/tasks/ITask.hpp"
-    "public/uni/tasks/TaskBase.hpp"
+    "public/uni/tasks/TaskBaseImpl.hpp"
     "public/uni/tasks/Task.hpp"
+    "public/uni/tasks/TaskImpl.hpp"
     "public/uni/tasks/MemFnTask.hpp"
+    "public/uni/tasks/MemberFnTaskImpl.hpp"
     "public/uni/tasks/TaskFactory.hpp"
     "public/uni/tasks/TaskComparators.hpp"
     "public/uni/tasks/TaskUtils.hpp"
@@ -25,7 +27,7 @@ set( SOURCES
     "src/uni/common/Request.cpp"
     "src/uni/common/Runtime.cpp"
     "src/uni/common/PollEngine.cpp"
-    "src/uni/tasks/TaskBase.cpp"
+    "src/uni/tasks/TaskBaseImpl.cpp"
     "src/uni/utils/Utils.cpp"
 )
 
