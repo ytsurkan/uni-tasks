@@ -12,7 +12,7 @@ public:
     TaskDispatcher& task_dispatcher( );
 
 private:
-    TaskDispatcher m_dispatcher;
+    TaskDispatcher m_dispatcher{};
 };
 }  // namespace common
 }  // namespace uni

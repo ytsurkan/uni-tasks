@@ -17,6 +17,7 @@ set( HEADERS
     "public/uni/tasks/MemberFnTask.hpp"
     "public/uni/tasks/MemberFnTaskImpl.hpp"
     "public/uni/tasks/TaskFactory.hpp"
+    "public/uni/tasks/TaskFactoryImpl.inl"
     "public/uni/tasks/TaskComparators.hpp"
     "public/uni/tasks/TaskUtils.hpp"
     "public/uni/utils/Utils.hpp"
@@ -50,22 +51,14 @@ set( TESTS_SOURCES
 add_library( ${PROJECT_NAME} STATIC
     ${HEADERS}
     ${SOURCES}
-#    ${TESTS_SOURCES}
 )
 
-#add_executable( ${PROJECT_NAME}
-#    ${HEADERS}
-#    ${SOURCES}
-#    ${TESTS_SOURCES}
-#)
 
 target_include_directories( ${PROJECT_NAME}
     PUBLIC
         ${SOURCE_DIR}/uni-tasks/public
     PRIVATE
         ${SOURCE_DIR}/uni-tasks/src
-#        ${SOURCE_DIR}/uni-tasks/tests/unit
-#        ${SOURCE_DIR}/uni-tasks/tests/integration
 )
 
 target_link_libraries( ${PROJECT_NAME}

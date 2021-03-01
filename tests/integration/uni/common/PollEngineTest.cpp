@@ -1,10 +1,11 @@
 #include <chrono>
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include "uni/common/PollEngine.hpp"
 #include "uni/common/Runtime.hpp"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 
 namespace integration
 {

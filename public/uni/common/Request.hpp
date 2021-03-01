@@ -26,7 +26,7 @@ private:
     StartCallback m_start_callback;
     CancelCallback m_cancel_callback;
     std::atomic< bool > m_started{false};
-    std::shared_future< void > m_future;
+    std::shared_future< void > m_future{};
 };
 
 }  // namespace common

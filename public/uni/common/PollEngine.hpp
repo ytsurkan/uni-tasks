@@ -30,12 +30,6 @@ public:
         m_poll_callback = std::forward< F >( callback );
     }
 
-protected:
-    virtual void
-    poll_impl( )
-    {
-    }
-
 private:
     void poll( );
     void run( );

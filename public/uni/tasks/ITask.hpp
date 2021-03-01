@@ -11,29 +11,43 @@ public:
     ITask( ) = default;
     virtual ~ITask( ) = default;
 
-    ITask( const ITask& ) = default;
-    ITask& operator=( const ITask& ) = default;
+    ITask( const ITask& ) = delete;
+    ITask& operator=( const ITask& ) = delete;
     ITask( ITask&& ) noexcept = default;
     ITask& operator=( ITask&& ) noexcept = default;
 
+    /**
+     * @brief Runs the function or member function associated with this task.
+     */
     void
     operator( )( )
     {
         run_impl( );
     }
 
+    /**
+     * @brief Runs the function or member function associated with this task.
+     */
     void
     run( )
     {
         run_impl( );
     }
 
+    /**
+     * @brief Gets the request unique identifier.
+     * @return request identifier.
+     */
     RequestId
     request_id( ) const
     {
         return request_id_impl( );
     }
 
+    /**
+     * @brief Sets the request identifier.
+     * @param request_id request identifier.
+     */
     void
     set_request_id( RequestId request_id )
     {

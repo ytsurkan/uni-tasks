@@ -10,7 +10,7 @@ class Task : public ITask
 {
 public:
     Task( F&& f, Args&&... args )
-        : m_impl{std::forward< F >( f ), std::forward< Args >( args )...}
+        : m_impl{f, std::forward< Args >( args )...}
     {
     }
 

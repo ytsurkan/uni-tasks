@@ -306,7 +306,7 @@ private:
     }
 
 private:
-    std::unordered_map< ThreadPoolNameType, ThreadPoolType > m_thread_pools;
+    std::unordered_map< ThreadPoolNameType, ThreadPoolType > m_thread_pools{};
 };
 
 }  // namespace uni

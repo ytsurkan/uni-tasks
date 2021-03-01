@@ -50,7 +50,6 @@ PollEngine::poll( )
     {
         m_poll_callback( );
     }
-    poll_impl( );
     run( );
 }
 

@@ -1,67 +1,9 @@
 #pragma once
 
-#include "uni/utils/Utils.hpp"
+#include "uni/tasks/TaskFactoryImpl.inl"
 
-#include "uni/tasks/MemberFnTask.hpp"
-#include "uni/tasks/Task.hpp"
-
-namespace uni {
-
-namespace details {
-
-struct FunctionTag
-{};
-
-template < typename F, typename... Args >
-auto
-create_task_impl( FunctionTag, F&& f, Args&&... args )
+namespace uni
 {
-    return Task< std::decay_t< F >, Args... >( std::forward< F >( f ),
-                                               std::forward< Args >( args )... );
-}
-
-template < typename Object, typename F, typename... Args >
-auto
-create_task_impl( Object* object, F f, Args&&... args )
-{
-    return MemberFnTask< Object, std::decay_t< F >, Args... >(
-        object, f, std::forward< Args >( args )... );
-}
-
-template < typename Object, typename F, typename... Args >
-auto
-create_task_impl( Object&& object, F f, Args&&... args )
-{
-    return MemberFnTask< std::decay_t< Object >, std::decay_t< F >, Args... >(
-        std::forward< Object >( object ), f, std::forward< Args >( args )... );
-}
-
-template < typename F, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr_impl( FunctionTag, F&& f, Args&&... args )
-{
-    return std::make_unique< Task< std::decay_t< F >, Args... > >(
-        std::forward< F >( f ), std::forward< Args >( args )... );
-}
-
-template < typename Object, typename F, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr_impl( Object* object, F f, Args&&... args )
-{
-    return std::make_unique< MemberFnTask< Object, std::decay_t< F >, Args... > >(
-        object, f, std::forward< Args >( args )... );
-}
-
-template < typename Object, typename F, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr_impl( Object&& object, F f, Args&&... args )
-{
-    return std::make_unique< MemberFnTask< std::decay_t< Object >, std::decay_t< F >, Args... > >(
-        std::forward< Object >( object ), f, std::forward< Args >( args )... );
-}
-
-} // namespace details
-
 /**
  * This factory function creates task object from function or lambda expression.
  * @param f Function of lamda expression.
@@ -69,12 +11,7 @@ create_task_ptr_impl( Object&& object, F f, Args&&... args )
  * @return Task object.
  */
 template < typename F, typename... Args >
-auto
-create_task( F&& f, Args&&... args )
-{
-    return details::create_task_impl(
-        details::FunctionTag( ), std::forward< F >( f ), std::forward< Args >( args )... );
-}
+auto create_task( F&& f, Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -86,11 +23,9 @@ create_task( F&& f, Args&&... args )
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) > f, Args&&... args )
-{
-    return details::create_task_impl( object, *f, std::forward< Args >( args )... );
-}
+auto create_task( Object* object,
+                  MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                  Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -102,13 +37,9 @@ create_task( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) > f, 
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( Object* object,
-             MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
-             Args&&... args )
-{
-    return details::create_task_impl( object, *f, std::forward< Args >( args )... );
-}
+auto create_task( Object* object,
+                  MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                  Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -118,11 +49,7 @@ create_task( Object* object,
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( Object* object, MemFnPtr< Object, R, Params... > f, Args&&... args )
-{
-    return create_task( object, utils::ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+auto create_task( Object* object, MemFnPtr< Object, R, Params... > f, Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -132,11 +59,7 @@ create_task( Object* object, MemFnPtr< Object, R, Params... > f, Args&&... args 
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( Object* object, ConstMemFnPtr< Object, R, Params... > f, Args&&... args )
-{
-    return create_task( object, ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+auto create_task( Object* object, ConstMemFnPtr< Object, R, Params... > f, Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -148,13 +71,9 @@ create_task( Object* object, ConstMemFnPtr< Object, R, Params... > f, Args&&... 
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( const std::shared_ptr< Object >& object,
-             MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
-             Args&&... args )
-{
-    return details::create_task_impl( object, *f, std::forward< Args >( args )... );
-}
+auto create_task( const std::shared_ptr< Object >& object,
+                  MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                  Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -166,13 +85,9 @@ create_task( const std::shared_ptr< Object >& object,
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( const std::shared_ptr< Object >& object,
-             MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
-             Args&&... args )
-{
-    return details::create_task_impl( object, *f, std::forward< Args >( args )... );
-}
+auto create_task( const std::shared_ptr< Object >& object,
+                  MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                  Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -182,13 +97,9 @@ create_task( const std::shared_ptr< Object >& object,
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( const std::shared_ptr< Object >& object,
-             MemFnPtr< Object, R, Params... > f,
-             Args&&... args )
-{
-    return create_task( object, ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+auto create_task( const std::shared_ptr< Object >& object,
+                  MemFnPtr< Object, R, Params... > f,
+                  Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -198,13 +109,9 @@ create_task( const std::shared_ptr< Object >& object,
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto
-create_task( const std::shared_ptr< Object >& object,
-             ConstMemFnPtr< Object, R, Params... > f,
-             Args&&... args )
-{
-    return create_task( object, ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+auto create_task( const std::shared_ptr< Object >& object,
+                  ConstMemFnPtr< Object, R, Params... > f,
+                  Args&&... args );
 
 /**
  * This factory function creates unique pointer to task object. Task object can be created from
@@ -214,12 +121,7 @@ create_task( const std::shared_ptr< Object >& object,
  * @return Unique pointer to task object.
  */
 template < typename F, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( F&& f, Args&&... args )
-{
-    return details::create_task_ptr_impl(
-        details::FunctionTag( ), std::forward< F >( f ), std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( F&& f, Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -231,11 +133,9 @@ create_task_ptr( F&& f, Args&&... args )
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) > f, Args&&... args )
-{
-    return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( Object* object,
+                                          MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                                          Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -247,13 +147,9 @@ create_task_ptr( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) >
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( Object* object,
-                 MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
-                 Args&&... args )
-{
-    return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( Object* object,
+                                          MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                                          Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -263,11 +159,9 @@ create_task_ptr( Object* object,
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( Object* object, MemFnPtr< Object, R, Params... > f, Args&&... args )
-{
-    return create_task_ptr( object, utils::ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( Object* object,
+                                          MemFnPtr< Object, R, Params... > f,
+                                          Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -277,11 +171,9 @@ create_task_ptr( Object* object, MemFnPtr< Object, R, Params... > f, Args&&... a
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( Object* object, ConstMemFnPtr< Object, R, Params... > f, Args&&... args )
-{
-    return create_task_ptr( object, utils::ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( Object* object,
+                                          ConstMemFnPtr< Object, R, Params... > f,
+                                          Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -293,13 +185,9 @@ create_task_ptr( Object* object, ConstMemFnPtr< Object, R, Params... > f, Args&&
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( const std::shared_ptr< Object >& object,
-                 MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
-                 Args&&... args )
-{
-    return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
+                                          MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                                          Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -311,13 +199,9 @@ create_task_ptr( const std::shared_ptr< Object >& object,
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( const std::shared_ptr< Object >& object,
-                 MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
-                 Args&&... args )
-{
-    return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
+                                          MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                                          Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -327,13 +211,9 @@ create_task_ptr( const std::shared_ptr< Object >& object,
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( const std::shared_ptr< Object >& object,
-                 MemFnPtr< Object, R, Params... > f,
-                 Args&&... args )
-{
-    return create_task_ptr( object, utils::ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
+                                          MemFnPtr< Object, R, Params... > f,
+                                          Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -343,12 +223,8 @@ create_task_ptr( const std::shared_ptr< Object >& object,
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask >
-create_task_ptr( const std::shared_ptr< Object >& object,
-                 ConstMemFnPtr< Object, R, Params... > f,
-                 Args&&... args )
-{
-    return create_task_ptr( object, utils::ptr2wrapper( f ), std::forward< Args >( args )... );
-}
+std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
+                                          ConstMemFnPtr< Object, R, Params... > f,
+                                          Args&&... args );
 
-} // namespace uni
+}  // namespace uni
