@@ -12,23 +12,19 @@ namespace common
 {
 class Runtime;
 
+// TODO: Separate interface from implementation.
 class PollEngine
 {
 public:
     using Callback = std::function< void( ) >;
 
-    PollEngine( std::shared_ptr< Runtime > runtime,
-                const std::string& thread_pool_name = "background" );
+    PollEngine( std::shared_ptr< Runtime > runtime, const std::string& thread_pool_name );
     void start( );
     void stop( );
     void set_poll_interval( TimeInterval poll_interval_ms );
 
     template < typename F >
-    void
-    set_poll_callback( F&& callback )
-    {
-        m_poll_callback = std::forward< F >( callback );
-    }
+    void set_poll_callback( F&& callback );
 
 private:
     void poll( );
@@ -42,6 +38,13 @@ private:
     Callback m_poll_callback{};
     std::atomic< RequestId > m_poll_request_id{0u};
 };
+
+template < typename F >
+void
+PollEngine::set_poll_callback( F&& callback )
+{
+    m_poll_callback = std::forward< F >( callback );
+}
 
 }  // namespace common
 }  // namespace uni

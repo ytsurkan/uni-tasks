@@ -67,13 +67,20 @@ struct FakeWorker
     }
 
     void
-    do_2( int32_t value, std::promise< size_t > promise )
+    do_2( int32_t value )
+    {
+        m_result2 = value;
+    }
+
+    void
+    do_3( int32_t value, std::promise< size_t > promise )
     {
         m_result = value;
         promise.set_value( m_result );
     }
 
     mutable int m_result{};
+    mutable int m_result2{};
 };
 
 }  // namespace
@@ -96,7 +103,7 @@ TEST_F( ThreadPoolTest, test_thread_pool_add_and_execute_memfn_task_ptr )
     for ( std::size_t i = 0; i < N; ++i )
     {
         auto task = uni::create_task_ptr( &( foo[ i ] ),
-                                          &FakeWorker::do_2,
+                                          &FakeWorker::do_3,
                                           static_cast< int32_t >( i ),
                                           std::move( task_done_push[ i ] ) );
         thread_pool.add_task( std::move( task ) );
@@ -131,30 +138,38 @@ TEST_F( ThreadPoolTest, test_thread_pool_of_tasks_with_lambda )
 
 TEST_F( ThreadPoolTest, test_thread_pool_of_tasks_with_function )
 {
-    auto result = std::make_shared< int32_t >( );
+    auto result1 = std::make_shared< int32_t >( );
+    auto result2 = std::make_shared< int32_t >( );
     const int32_t v1 = 1;
-    auto task = uni::create_task( sum, v1, 2, result );
+    auto task1 = uni::create_task( sum, v1, 2, result1 );
+    auto task2 = uni::create_task( sum, 1, 2, result2 );
 
-    uni::ThreadPool< decltype( task ), uni::TaskCmp > thread_pool;
+    uni::ThreadPool< decltype( task1 ), uni::TaskCmp > thread_pool;
     thread_pool.start( );
-    thread_pool.add_task( std::move( task ) );
+    thread_pool.add_task( std::move( task1 ) );
+    thread_pool.add_task( std::move( task2 ) );
     thread_pool.stop( );
 
     const int32_t expected = ( 1 + 2 );
-    ASSERT_EQ( expected, *result );
+    ASSERT_EQ( expected, *result1 );
+    ASSERT_EQ( expected, *result2 );
 }
 
 TEST_F( ThreadPoolTest, test_thread_pool_of_tasks_with_memfn )
 {
-    const int32_t expected = 42;
+    const int32_t expected1 = 42;
+    const int32_t expected2 = 1;
     FakeWorker foo;
 
-    auto task = uni::create_task( &foo, &FakeWorker::do_1, expected );
-    uni::ThreadPool< decltype( task ), uni::TaskCmp > thread_pool;
+    auto task1 = uni::create_task( &foo, &FakeWorker::do_1, expected1 );
+    auto task2 = uni::create_task( &foo, &FakeWorker::do_2, 1 );
+    uni::ThreadPool< decltype( task1 ), uni::TaskCmp > thread_pool;
     thread_pool.start( );
-    thread_pool.add_task( std::move( task ) );
+    thread_pool.add_task( std::move( task1 ) );
+    thread_pool.add_task( std::move( task2 ) );
 
     thread_pool.stop( );
 
-    ASSERT_EQ( expected, foo.m_result );
+    ASSERT_EQ( expected1, foo.m_result );
+    ASSERT_EQ( expected2, foo.m_result2 );
 }

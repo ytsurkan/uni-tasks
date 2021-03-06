@@ -9,6 +9,7 @@ namespace uni
 {
 namespace common
 {
+// TODO: Separate interface from implementation.
 class Request
 {
 public:

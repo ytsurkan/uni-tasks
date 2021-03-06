@@ -11,8 +11,8 @@
 
 namespace uni
 {
+// TODO: Separate interface from implementation.
 // TODO: Make TaskDispatcher class template
-
 class TaskDispatcher
 {
 public:

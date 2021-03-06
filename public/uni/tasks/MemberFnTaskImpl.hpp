@@ -8,10 +8,11 @@ template < typename Object, typename F, typename... Args >
 class MemberFnTaskImpl : public TaskBaseImpl
 {
 public:
-    MemberFnTaskImpl( Object* object, F f, Args&&... args )
+    template < typename... TArgs >
+    MemberFnTaskImpl( Object* object, F f, TArgs&&... args )
         : m_object{object}
         , m_function{f}
-        , m_args{std::forward< Args >( args )...}
+        , m_args{std::forward< TArgs >( args )...}
     {
     }
 
@@ -41,24 +42,18 @@ private:
 private:
     Object* m_object{nullptr};
     F m_function;
-    std::tuple< std::decay_t< Args >... > m_args;
+    std::tuple< Args... > m_args;
 };
 
 template < typename Object, typename F, typename... Args >
 class MemberFnTaskImpl< std::shared_ptr< Object >, F, Args... > : public TaskBaseImpl
 {
 public:
-    MemberFnTaskImpl( std::shared_ptr< Object >&& object, F f, Args&&... args )
-        : m_object{std::move( object )}
+    template < typename TObject, typename... TArgs >
+    MemberFnTaskImpl( TObject&& object, F f, TArgs&&... args )
+        : m_object{std::forward< TObject >( object )}
         , m_function{f}
-        , m_args{std::forward< Args >( args )...}
-    {
-    }
-
-    MemberFnTaskImpl( const std::shared_ptr< Object >& object, F f, Args&&... args )
-        : m_object{object}
-        , m_function{f}
-        , m_args{std::forward< Args >( args )...}
+        , m_args{std::forward< TArgs >( args )...}
     {
     }
 
@@ -88,7 +83,7 @@ private:
 private:
     std::shared_ptr< Object > m_object;
     F m_function;
-    std::tuple< std::decay_t< Args >... > m_args;
+    std::tuple< Args... > m_args;
 };
 
 }  // namespace uni

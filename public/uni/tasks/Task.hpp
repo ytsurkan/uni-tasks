@@ -9,13 +9,19 @@ template < typename F, typename... Args >
 class Task : public ITask
 {
 public:
-    Task( F&& f, Args&&... args )
-        : m_impl{f, std::forward< Args >( args )...}
-    {
-    }
-
-    Task( const F& f, Args&&... args )
-        : m_impl{f, std::forward< Args >( args )...}
+    /**
+     * @brief
+     * std::decay_t models the type conversions applied to function arguments when passed by value.
+     * std::is_same_v<C, Task> is true for case "auto task2 = task;"
+     * std::enable_if_t disables calling of this constructor instead of copy constructor for
+     * non-const objects.
+     */
+    template < typename TF,
+               typename C = std::decay_t< TF >,
+               typename = typename std::enable_if_t< !( std::is_same_v< C, Task > ) >,
+               typename... TArgs >
+    Task( TF&& f, TArgs&&... args )
+        : m_impl( std::forward< TF >( f ), std::forward< TArgs >( args )... )
     {
     }
 

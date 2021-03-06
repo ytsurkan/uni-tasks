@@ -9,8 +9,9 @@ template < typename Object, typename F, typename... Args >
 class MemberFnTask : public ITask
 {
 public:
-    MemberFnTask( Object* object, F f, Args&&... args )
-        : m_impl{object, f, std::forward< Args >( args )...}
+    template < typename... TArgs >
+    MemberFnTask( Object* object, F f, TArgs&&... args )
+        : m_impl{object, f, std::forward< TArgs >( args )...}
     {
     }
 
@@ -78,13 +79,9 @@ template < typename Object, typename F, typename... Args >
 class MemberFnTask< std::shared_ptr< Object >, F, Args... > : public ITask
 {
 public:
-    MemberFnTask( std::shared_ptr< Object >&& object, F f, Args&&... args )
-        : m_impl{std::move( object ), f, std::forward< Args >( args )...}
-    {
-    }
-
-    MemberFnTask( const std::shared_ptr< Object >& object, F f, Args&&... args )
-        : m_impl{object, f, std::forward< Args >( args )...}
+    template < typename TObject, typename... TArgs >
+    MemberFnTask( TObject&& object, F f, TArgs&&... args )
+        : m_impl{std::forward< TObject >( object ), f, std::forward< TArgs >( args )...}
     {
     }
 

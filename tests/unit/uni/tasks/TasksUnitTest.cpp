@@ -179,8 +179,8 @@ TEST_F( TasksTest, test_create_task_for_const_memfn_of_sharedptr_object )
 
 TEST_F( TasksTest, test_create_array_of_tasks_and_call )
 {
-    int accumulator = 0;
-    const auto f = [&accumulator]( int a ) { accumulator += a; };
+    int32_t accumulator = 0;
+    const auto f = [&accumulator]( int32_t a ) { accumulator += a; };
 
     std::vector< std::unique_ptr< uni::ITask > > tasks;
 

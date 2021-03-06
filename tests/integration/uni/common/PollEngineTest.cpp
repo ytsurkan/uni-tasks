@@ -29,7 +29,7 @@ TEST_F( PollEngineTest, test_poll_engine_callback )
     runtime->task_dispatcher( ).start( );
 
     {
-        uni::common::PollEngine poll_engine( runtime );
+        uni::common::PollEngine poll_engine( runtime, "background" );
 
         static const auto START_TIME = std::chrono::steady_clock::now( );
 
