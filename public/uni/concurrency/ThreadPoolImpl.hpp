@@ -8,6 +8,9 @@
 #include "uni/tasks/TaskUtils.hpp"
 #include "uni/utils/Utils.hpp"
 
+// TODO: remove iostream
+#include <iostream>
+
 namespace uni
 {
 struct ThreadPoolStoppedException : public std::exception

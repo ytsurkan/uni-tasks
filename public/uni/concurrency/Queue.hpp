@@ -7,8 +7,6 @@
 #include <mutex>
 #include <set>
 
-#include <iostream>
-
 namespace uni
 {
 struct QueueClosedException : public std::exception

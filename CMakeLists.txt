@@ -3,6 +3,7 @@ project( uni-tasks )
 set( HEADERS
     "public/uni/Types.hpp"
     "public/uni/common/TaskDispatcher.hpp"
+    "public/uni/common/TaskDispatcherImpl.hpp"
     "public/uni/common/Request.hpp"
     "public/uni/common/RequestFactory.hpp"
     "public/uni/common/Runtime.hpp"
@@ -28,22 +29,10 @@ set( SOURCES
     "src/uni/common/Request.cpp"
     "src/uni/common/Runtime.cpp"
     "src/uni/common/PollEngine.cpp"
+    "src/uni/common/TaskDispatcher.cpp"
+    "src/uni/common/TaskDispatcherImpl.cpp"
     "src/uni/tasks/TaskBaseImpl.cpp"
     "src/uni/utils/Utils.cpp"
-)
-
-set( TESTS_SOURCES
-    "tests/unit/uni/tasks/TasksUnitTests.hpp"
-    "tests/unit/uni/tasks/TasksUnitTests.cpp"
-    "tests/unit/uni/concurrency/ThreadPoolUnitTests.hpp"
-    "tests/unit/uni/concurrency/ThreadPoolUnitTests.cpp"
-    "tests/unit/uni/common/TaskDispatcherUnitTests.hpp"
-    "tests/unit/uni/common/TaskDispatcherUnitTests.cpp"
-    "tests/integration/uni/common/DemoComponent.hpp"
-    "tests/integration/uni/common/DemoComponent.cpp"
-    "tests/integration/uni/common/DemoComponentListener.hpp"
-    "tests/integration/uni/common/DemoComponentIntegrationTests.hpp"
-    "tests/integration/uni/common/DemoComponentIntegrationTests.cpp"
 )
 
 #treat_all_warnings_as_errors()
