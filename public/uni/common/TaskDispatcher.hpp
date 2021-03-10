@@ -30,6 +30,8 @@ public:
                    RequestId request_id,
                    std::unique_ptr< ITask > task );
 
+    // TODO: create TaskDispacherExtended, move member function inplementation to
+    // TaskDispacherExtended.inl
     template < typename F, typename... Args >
     void
     dispatch( const std::string& thread_pool_name, F&& f, Args&&... args )

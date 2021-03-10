@@ -106,7 +106,7 @@ TEST_F( DemoComponentTest, test_demo_component_calculate_1 )
     TestDemoComponentListener listener{runtime};
     const auto component = std::make_shared< DemoComponentImpl >( runtime, listener );
     auto request = component->calculate_1_impl( 2, "hello" );
-    const uni::RequestId id = request.request_id( );
+    const uni::RequestId id = request.get_request_id( );
     request.start( );
 
     listener.wait_on_calculation_done( );
@@ -130,7 +130,7 @@ TEST_F( DemoComponentTest, test_demo_component_cancel_calculate_1 )
     const auto component = std::make_shared< DemoComponentImpl >( runtime, listener );
     // 10*15 iterations 100ms each
     auto request = component->calculate_1_impl( 10 * 15, "hello" );
-    const uni::RequestId id = request.request_id( );
+    const uni::RequestId id = request.get_request_id( );
     request.start( );
 
     listener.wait_on_calculation_started( );

@@ -5,6 +5,7 @@ set( HEADERS
     "public/uni/common/TaskDispatcher.hpp"
     "public/uni/common/TaskDispatcherImpl.hpp"
     "public/uni/common/Request.hpp"
+    "public/uni/common/RequestCallbacks.hpp"
     "public/uni/common/RequestFactory.hpp"
     "public/uni/common/Runtime.hpp"
     "public/uni/common/PollEngine.hpp"
@@ -27,10 +28,13 @@ set( HEADERS
 
 set( SOURCES
     "src/uni/common/Request.cpp"
+    "src/uni/common/RequestImpl.hpp"
+    "src/uni/common/RequestImpl.cpp"
     "src/uni/common/Runtime.cpp"
     "src/uni/common/PollEngine.cpp"
     "src/uni/common/TaskDispatcher.cpp"
     "src/uni/common/TaskDispatcherImpl.cpp"
+    "src/uni/common/RequestFactory.cpp"
     "src/uni/tasks/TaskBaseImpl.cpp"
     "src/uni/utils/Utils.cpp"
 )

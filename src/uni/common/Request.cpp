@@ -1,46 +1,32 @@
 #include "uni/common/Request.hpp"
+#include "uni/common/RequestImpl.hpp"
 
 namespace uni
 {
 namespace common
 {
-Request::Request( RequestId id,
-                  Request::StartCallback start_callback,
-                  Request::CancelCallback cancel_callback )
-    : m_request_id{id}
-    , m_start_callback{std::move( start_callback )}
-    , m_cancel_callback{std::move( cancel_callback )}
+Request::Request( RequestId id, RequestStartCallback start, RequestCancelCallback cancel )
+    : m_impl{std::make_shared< RequestImpl >( id, start, cancel )}
 {
 }
 
 RequestId
-Request::request_id( ) const
+Request::get_request_id( ) const
 {
-    return m_request_id;
+    return m_impl->request_id_impl( );
 }
 
 void
 Request::start( )
 {
-    if ( m_started )
-    {
-        throw std::logic_error( "Request already started!" );
-    }
-    m_started = true;
-    m_future = m_start_callback( );
-    m_start_callback = {};
+    m_impl->start_impl( );
 }
 
 void
 Request::cancel( )
 {
-    if ( !m_started )
-    {
-        throw std::logic_error( "Request already cancelled!" );
-    }
-    m_started = false;
-    m_cancel_callback( std::move( m_future ) );
-    m_cancel_callback = {};
+    m_impl->cancel_impl( );
 }
+
 }  // namespace common
 }  // namespace uni
