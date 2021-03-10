@@ -80,25 +80,23 @@ TEST_F( TaskDispatcherTest, test_execute_lambda )
 
 TEST_F( TaskDispatcherTest, test_dispatch_lambda )
 {
-    bool async_executed{false};
-    const auto f = [&]( int32_t a, int32_t b ) {
-        const int32_t value = a + b;
-        const int32_t expected = 10 + 10;
-        ASSERT_EQ( value, expected );
-        async_executed = true;
+    std::promise< bool > async_executed_push;
+    std::future< bool > async_executed_pop = async_executed_push.get_future( );
+    auto f = [promise = std::move( async_executed_push )]( int32_t, int32_t ) mutable {
+        promise.set_value( true );
     };
 
     uni::TaskDispatcher dispatcher;
     dispatcher.start( );
 
-    const bool sync_executed = dispatcher.dispatch_or_execute( "background", f, 10, 10 );
+    const bool sync_executed
+        = dispatcher.dispatch_or_execute( "background", std::move( f ), 10, 10 );
     ASSERT_EQ( sync_executed, false );
 
-    dispatcher.dispatch( "background", f, 10, 10 );
     dispatcher.stop( );
 
     ASSERT_EQ( sync_executed, false );
-    ASSERT_EQ( async_executed, true );
+    ASSERT_EQ( async_executed_pop.get( ), true );
 }
 
 TEST_F( TaskDispatcherTest, test_execute_function )
