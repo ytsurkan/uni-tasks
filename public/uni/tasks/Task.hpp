@@ -31,52 +31,52 @@ public:
     Task( Task&& ) noexcept = default;
     Task& operator=( Task&& ) noexcept = default;
 
-protected:
+private:
     /// ITask interface implementation
     void
-    run_impl( ) override
+    run( ) override
     {
         m_impl.run_impl( );
     }
 
     RequestId
-    request_id_impl( ) const override
+    request_id( ) const override
     {
         return m_impl.request_id_impl( );
     }
 
     void
-    set_request_id_impl( RequestId request_id ) override
+    set_request_id( RequestId request_id ) override
     {
         m_impl.set_request_id_impl( request_id );
     }
 
     SequenceId
-    sequence_id_impl( ) const override
+    sequence_id( ) const override
     {
         return m_impl.sequence_id_impl( );
     }
 
     void
-    set_due_time_impl( TimeInterval delay ) override
+    set_due_time( TimeInterval delay ) override
     {
         m_impl.set_due_time_impl( delay );
     }
 
     TimeInterval
-    due_time_impl( ) const override
+    due_time( ) const override
     {
         return m_impl.due_time_impl( );
     }
 
     TimeInterval
-    delay_impl( ) const override
+    delay( ) const override
     {
         return m_impl.delay_impl( );
     }
 
     std::future< void >
-    get_future_impl( ) override
+    get_future( ) override
     {
         return m_impl.get_future_impl( );
     }

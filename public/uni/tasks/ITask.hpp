@@ -19,69 +19,36 @@ public:
     /**
      * @brief Runs the function or member function associated with this task.
      */
-    void
-    operator( )( )
-    {
-        run_impl( );
-    }
-
-    /**
-     * @brief Runs the function or member function associated with this task.
-     */
-    void
-    run( )
-    {
-        run_impl( );
-    }
+    virtual void run( ) = 0;
 
     /**
      * @brief Gets the request unique identifier.
      * @return request identifier.
      */
-    RequestId
-    request_id( ) const
-    {
-        return request_id_impl( );
-    }
+    virtual RequestId request_id( ) const = 0;
 
     /**
      * @brief Sets the request identifier.
      * @param request_id request identifier.
      */
-    void
-    set_request_id( RequestId request_id )
-    {
-        set_request_id_impl( request_id );
-    }
+    virtual void set_request_id( RequestId request_id ) = 0;
 
     /**
      * @brief Returns the unique identifier of task.
      * @return sequence id
      */
-    SequenceId
-    sequence_id( ) const
-    {
-        return sequence_id_impl( );
-    }
+    virtual SequenceId sequence_id( ) const = 0;
 
     /**
      * @brief Sets the due time as current time (epoch time) + delay time in ms.
      */
-    void
-    set_due_time( TimeInterval delay_ms )
-    {
-        set_due_time_impl( delay_ms );
-    }
+    virtual void set_due_time( TimeInterval delay ) = 0;
 
     /**
      * @brief Returns the due time (epoch time) in ms.
      * @return due time in ms.
      */
-    TimeInterval
-    due_time( ) const
-    {
-        return due_time_impl( );
-    }
+    virtual TimeInterval due_time( ) const = 0;
 
     /**
      * @brief Returns the delay time in ms from the current time.
@@ -89,34 +56,16 @@ public:
      * result each time.
      * @return delay time in ms.
      */
-    TimeInterval
-    delay( ) const
-    {
-        return delay_impl( );
-    }
+    virtual TimeInterval delay( ) const = 0;
 
     /**
-     * @brief Returns a std::future associated with the promised result of task, that allows to wait
-     * for task completion or get the exception that occured on task execution. The get_future()
-     * should be called before the task execution, otherwise returned std::future will not be
-     * associated with the promised result of task.
+     * @brief Returns a std::future associated with the promised result of task, that allows
+     * to wait  for task completion or get the exception that occured on task execution.
+     * The get_future() should be called before the task execution, otherwise returned std::future
+     * will not be associated with the promised result of task.
      * @return returns a std::future associated with the promised result of task.
      */
-    std::future< void >
-    get_future( )
-    {
-        return get_future_impl( );
-    }
-
-protected:
-    virtual void run_impl( ) = 0;
-    virtual RequestId request_id_impl( ) const = 0;
-    virtual void set_request_id_impl( RequestId request_id ) = 0;
-    virtual SequenceId sequence_id_impl( ) const = 0;
-    virtual void set_due_time_impl( TimeInterval delay ) = 0;
-    virtual TimeInterval due_time_impl( ) const = 0;
-    virtual TimeInterval delay_impl( ) const = 0;
-    virtual std::future< void > get_future_impl( ) = 0;
+    virtual std::future< void > get_future( ) = 0;
 };
 
 }  // namespace uni

@@ -117,8 +117,8 @@ private:
                 {
                     // TODO: Add logging
                     // std::cerr << "run() id=" << task_optional->request_id( ) << std::endl;
-                    auto& task = utils::get_value( task_optional );
-                    task( );
+                    uni::ITask& task = utils::get_value( task_optional );
+                    task.run( );
                 }
                 catch ( const std::exception& error )
                 {
