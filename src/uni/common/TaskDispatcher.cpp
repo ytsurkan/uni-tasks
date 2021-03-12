@@ -2,6 +2,8 @@
 
 namespace uni
 {
+namespace common
+{
 TaskDispatcher::TaskDispatcher(
     const std::vector< std::tuple< std::string, size_t > >& thread_pool_configurations )
     : m_impl{thread_pool_configurations}
@@ -44,4 +46,6 @@ TaskDispatcher::assert_execution_context( const std::string& thread_pool_name )
 {
     m_impl.assert_execution_context_impl( thread_pool_name );
 }
+
+}  // namespace common
 }  // namespace uni

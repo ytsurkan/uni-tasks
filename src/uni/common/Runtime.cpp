@@ -4,7 +4,7 @@ namespace uni
 {
 namespace common
 {
-TaskDispatcher&
+TaskDispatcherBasic&
 Runtime::task_dispatcher( )
 {
     return m_dispatcher;

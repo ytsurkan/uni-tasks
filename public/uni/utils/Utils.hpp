@@ -66,14 +66,14 @@ apply( F&& f, Tuple&& tuple )
 
 template < typename Object, typename R, typename... Params >
 MemFnPtrWrapper< R ( Object::* )( Params... ) >
-ptr2wrapper( MemFnPtr< Object, R, Params... > ptr )
+ptr2wrapper( MemberFnPtr< Object, R, Params... > ptr )
 {
     return ptr;
 }
 
 template < typename Object, typename R, typename... Params >
 MemFnPtrWrapper< R ( Object::* )( Params... ) const >
-ptr2wrapper( ConstMemFnPtr< Object, R, Params... > ptr )
+ptr2wrapper( ConstMemberFnPtr< Object, R, Params... > ptr )
 {
     return ptr;
 }

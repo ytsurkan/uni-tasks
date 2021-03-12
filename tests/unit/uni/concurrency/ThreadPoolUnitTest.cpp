@@ -79,8 +79,8 @@ struct FakeWorker
         promise.set_value( m_result );
     }
 
-    mutable int m_result{};
-    mutable int m_result2{};
+    mutable int32_t m_result{};
+    mutable int32_t m_result2{};
 };
 
 }  // namespace

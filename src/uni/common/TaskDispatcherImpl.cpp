@@ -2,6 +2,8 @@
 
 namespace uni
 {
+namespace common
+{
 TaskDispatcherImpl::TaskDispatcherImpl(
     const std::vector< std::tuple< std::string, size_t > >& thread_pool_configurations )
 {
@@ -67,4 +69,6 @@ TaskDispatcherImpl::find_thread_pool( const std::string& thread_pool_name )
     auto& thread_pool = search->second;
     return thread_pool;
 }
+
+}  // namespace common
 }  // namespace uni

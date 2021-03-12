@@ -31,7 +31,7 @@ private:
     std::shared_future< void > schedule_calculate_1( ::uni::RequestId id,
                                                      int p1,
                                                      const std::string& p2 );
-    void do_calculate_1( ::uni::RequestId id, int p1, const std::string& p2 );
+    void do_calculate_1( ::uni::RequestId id, int32_t p1, const std::string& p2 );
     void poll_calculate_1( );
     void cancel_calculate_1( );
     void reset_calculate_1( );

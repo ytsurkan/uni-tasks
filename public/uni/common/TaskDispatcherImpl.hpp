@@ -6,6 +6,8 @@
 
 namespace uni
 {
+namespace common
+{
 class TaskDispatcherImpl
 {
 public:
@@ -14,7 +16,7 @@ public:
 
     void start_impl( );
     void stop_impl( );
-
+    void assert_execution_context_impl( const std::string& thread_pool_name );
     void cancel_pending_impl( const std::string& thread_pool_name, RequestId request_id );
 
     /**
@@ -61,6 +63,32 @@ public:
     void
     dispatch_impl( const std::string& thread_pool_name,
                    Object* object,
+                   MemberFnPtr< Object, R, Params... > f,
+                   Args&&... args )
+    {
+        auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
+        task->set_request_id( utils::create_request_id( ) );
+        auto& thread_pool = find_thread_pool( thread_pool_name );
+        thread_pool.add_task( std::move( task ) );
+    }
+
+    template < typename Object, typename R, typename... Params, typename... Args >
+    void
+    dispatch_impl( const std::string& thread_pool_name,
+                   Object* object,
+                   ConstMemberFnPtr< Object, R, Params... > f,
+                   Args&&... args )
+    {
+        auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
+        task->set_request_id( utils::create_request_id( ) );
+        auto& thread_pool = find_thread_pool( thread_pool_name );
+        thread_pool.add_task( std::move( task ) );
+    }
+
+    template < typename Object, typename R, typename... Params, typename... Args >
+    void
+    dispatch_impl( const std::string& thread_pool_name,
+                   Object* object,
                    MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
                    Args&&... args )
     {
@@ -75,6 +103,32 @@ public:
     dispatch_impl( const std::string& thread_pool_name,
                    Object* object,
                    MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                   Args&&... args )
+    {
+        auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
+        task->set_request_id( utils::create_request_id( ) );
+        auto& thread_pool = find_thread_pool( thread_pool_name );
+        thread_pool.add_task( std::move( task ) );
+    }
+
+    template < typename Object, typename R, typename... Params, typename... Args >
+    void
+    dispatch_impl( const std::string& thread_pool_name,
+                   const std::shared_ptr< Object >& object,
+                   MemberFnPtr< Object, R, Params... > f,
+                   Args&&... args )
+    {
+        auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
+        task->set_request_id( utils::create_request_id( ) );
+        auto& thread_pool = find_thread_pool( thread_pool_name );
+        thread_pool.add_task( std::move( task ) );
+    }
+
+    template < typename Object, typename R, typename... Params, typename... Args >
+    void
+    dispatch_impl( const std::string& thread_pool_name,
+                   const std::shared_ptr< Object >& object,
+                   ConstMemberFnPtr< Object, R, Params... > f,
                    Args&&... args )
     {
         auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
@@ -162,7 +216,7 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               Object* object,
-                              MemFnPtr< Object, R, Params... > f,
+                              MemberFnPtr< Object, R, Params... > f,
                               Args&&... args )
     {
         return dispatch_or_execute_impl(
@@ -173,7 +227,7 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               Object* object,
-                              ConstMemFnPtr< Object, R, Params... > f,
+                              ConstMemberFnPtr< Object, R, Params... > f,
                               Args&&... args )
     {
         return dispatch_or_execute_impl(
@@ -218,7 +272,7 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               const std::shared_ptr< Object >& object,
-                              MemFnPtr< Object, R, Params... > f,
+                              MemberFnPtr< Object, R, Params... > f,
                               Args&&... args )
     {
         return dispatch_or_execute_impl(
@@ -229,15 +283,12 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               const std::shared_ptr< Object >& object,
-                              ConstMemFnPtr< Object, R, Params... > f,
+                              ConstMemberFnPtr< Object, R, Params... > f,
                               Args&&... args )
     {
         return dispatch_or_execute_impl(
             thread_pool_name, object, utils::ptr2wrapper( f ), std::forward< Args >( args )... );
     }
-
-public:
-    void assert_execution_context_impl( const std::string& thread_pool_name );
 
 private:
     using ThreadPoolNameType = std::string;
@@ -250,4 +301,5 @@ private:
     std::unordered_map< ThreadPoolNameType, ThreadPoolType > m_thread_pools{};
 };
 
+}  // namespace common
 }  // namespace uni

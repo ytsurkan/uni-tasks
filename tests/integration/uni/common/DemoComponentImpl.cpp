@@ -50,7 +50,7 @@ DemoComponentImpl::schedule_calculate_1( ::uni::RequestId id, int p1, const std:
 }
 
 void
-DemoComponentImpl::do_calculate_1( ::uni::RequestId id, int p1, const std::string& p2 )
+DemoComponentImpl::do_calculate_1( ::uni::RequestId id, int32_t p1, const std::string& p2 )
 {
     m_runtime.task_dispatcher( ).assert_execution_context( "background" );
 

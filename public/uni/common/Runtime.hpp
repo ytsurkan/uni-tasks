@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uni/common/TaskDispatcher.hpp"
+#include "uni/common/TaskDispatcherBasic.hpp"
 
 namespace uni
 {
@@ -10,10 +10,10 @@ namespace common
 class Runtime
 {
 public:
-    TaskDispatcher& task_dispatcher( );
+    TaskDispatcherBasic& task_dispatcher( );
 
 private:
-    TaskDispatcher m_dispatcher{};
+    TaskDispatcherBasic m_dispatcher{};
 };
 }  // namespace common
 }  // namespace uni

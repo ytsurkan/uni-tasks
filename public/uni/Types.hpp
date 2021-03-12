@@ -12,10 +12,10 @@ using SequenceId = size_t;
 using TimeInterval = int64_t;
 
 template < typename Object, typename R, typename... Args >
-using MemFnPtr = R ( Object::* )( Args... );
+using MemberFnPtr = R ( Object::* )( Args... );
 
 template < typename Object, typename R, typename... Args >
-using ConstMemFnPtr = R ( Object::* )( Args... ) const;
+using ConstMemberFnPtr = R ( Object::* )( Args... ) const;
 
 /**
  * The rationale for why the MemFnPtrWrapper was created.

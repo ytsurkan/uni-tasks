@@ -1,9 +1,7 @@
 #pragma once
 
-#include "uni/tasks/TaskFactoryImpl.inl"
-
-// TODO: create simple TaskFactory and move other to TaskFactoryExtended.hpp
-// create subfolder details.
+#include "uni/tasks/TaskFactory.inl"
+#include "uni/tasks/TaskFactoryBasic.hpp"
 
 namespace uni
 {
@@ -52,7 +50,7 @@ auto create_task( Object* object,
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto create_task( Object* object, MemFnPtr< Object, R, Params... > f, Args&&... args );
+auto create_task( Object* object, MemberFnPtr< Object, R, Params... > f, Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -62,7 +60,7 @@ auto create_task( Object* object, MemFnPtr< Object, R, Params... > f, Args&&... 
  * @return Task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-auto create_task( Object* object, ConstMemFnPtr< Object, R, Params... > f, Args&&... args );
+auto create_task( Object* object, ConstMemberFnPtr< Object, R, Params... > f, Args&&... args );
 
 /**
  * This factory function allows to specify explicitly the prototype of function to be called.
@@ -101,7 +99,7 @@ auto create_task( const std::shared_ptr< Object >& object,
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 auto create_task( const std::shared_ptr< Object >& object,
-                  MemFnPtr< Object, R, Params... > f,
+                  MemberFnPtr< Object, R, Params... > f,
                   Args&&... args );
 
 /**
@@ -113,7 +111,7 @@ auto create_task( const std::shared_ptr< Object >& object,
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 auto create_task( const std::shared_ptr< Object >& object,
-                  ConstMemFnPtr< Object, R, Params... > f,
+                  ConstMemberFnPtr< Object, R, Params... > f,
                   Args&&... args );
 
 /**
@@ -163,7 +161,7 @@ std::unique_ptr< ITask > create_task_ptr( Object* object,
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask > create_task_ptr( Object* object,
-                                          MemFnPtr< Object, R, Params... > f,
+                                          MemberFnPtr< Object, R, Params... > f,
                                           Args&&... args );
 
 /**
@@ -175,7 +173,7 @@ std::unique_ptr< ITask > create_task_ptr( Object* object,
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask > create_task_ptr( Object* object,
-                                          ConstMemFnPtr< Object, R, Params... > f,
+                                          ConstMemberFnPtr< Object, R, Params... > f,
                                           Args&&... args );
 
 /**
@@ -215,7 +213,7 @@ std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& objec
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
-                                          MemFnPtr< Object, R, Params... > f,
+                                          MemberFnPtr< Object, R, Params... > f,
                                           Args&&... args );
 
 /**
@@ -227,7 +225,7 @@ std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& objec
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
-                                          ConstMemFnPtr< Object, R, Params... > f,
+                                          ConstMemberFnPtr< Object, R, Params... > f,
                                           Args&&... args );
 
 }  // namespace uni

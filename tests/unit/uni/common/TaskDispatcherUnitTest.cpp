@@ -60,7 +60,7 @@ TEST_F( TaskDispatcherTest, test_execute_lambda )
         ASSERT_EQ( value, expected );
     };
 
-    uni::TaskDispatcher dispatcher;
+    uni::common::TaskDispatcher dispatcher;
     dispatcher.start( );
 
     bool async_executed{false};
@@ -86,7 +86,7 @@ TEST_F( TaskDispatcherTest, test_dispatch_lambda )
         promise.set_value( true );
     };
 
-    uni::TaskDispatcher dispatcher;
+    uni::common::TaskDispatcher dispatcher;
     dispatcher.start( );
 
     const bool sync_executed
@@ -103,7 +103,7 @@ TEST_F( TaskDispatcherTest, test_execute_function )
 {
     auto result = std::make_shared< int32_t >( );
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
 
         bool async_executed{false};
@@ -130,7 +130,7 @@ TEST_F( TaskDispatcherTest, test_dispatch_function )
 {
     auto result = std::make_shared< int32_t >( );
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
 
         const bool executed = dispatcher.dispatch_or_execute( "background", sum, 1, 2, result );
@@ -148,7 +148,7 @@ TEST_F( TaskDispatcherTest, test_execute_memfn )
     FakeWorker foo;
     const int32_t expected = 42;
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
 
         auto call_wrapper = [&]( int a ) {
@@ -171,7 +171,7 @@ TEST_F( TaskDispatcherTest, test_dispatch_memfn )
     FakeWorker foo2;
     const int32_t expected2 = 13;
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
 
         const bool executed
@@ -192,7 +192,7 @@ TEST_F( TaskDispatcherTest, test_execute_const_memfn )
     const int32_t a = 42;
     const int32_t b = 1;
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
         auto call_wrapper = [&]( int x, int y ) {
             const bool executed = dispatcher.dispatch_or_execute(
@@ -220,7 +220,7 @@ TEST_F( TaskDispatcherTest, test_dispatch_const_memfn )
     const int32_t a = 42;
     const int32_t b = 1;
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
 
         const bool executed = dispatcher.dispatch_or_execute(
@@ -252,7 +252,7 @@ TEST_F( TaskDispatcherTest, test_execute_memfn_of_sharedptr_object )
     const auto sp = std::make_shared< FakeWorker >( );
     const int32_t expected = 42;
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
         auto call_wrapper = [&]( int x ) {
             const bool executed
@@ -272,7 +272,7 @@ TEST_F( TaskDispatcherTest, test_dispatch_memfn_of_sharedptr_object )
     const auto sp = std::make_shared< FakeWorker >( );
     const int32_t expected = 42;
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
         const bool executed
             = dispatcher.dispatch_or_execute( "background", sp, &FakeWorker::do_1, expected );
@@ -289,7 +289,7 @@ TEST_F( TaskDispatcherTest, test_execute_const_memfn_of_sharedptr_object )
     const int32_t a = 42;
     const int32_t b = 1;
     {
-        uni::TaskDispatcher dispatcher;
+        uni::common::TaskDispatcher dispatcher;
         dispatcher.start( );
         auto call_wrapper = [&]( int x, int y ) {
             const bool executed = dispatcher.dispatch_or_execute(
