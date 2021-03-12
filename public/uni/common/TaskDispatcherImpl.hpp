@@ -89,7 +89,7 @@ public:
     void
     dispatch_impl( const std::string& thread_pool_name,
                    Object* object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                    Args&&... args )
     {
         auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
@@ -102,7 +102,7 @@ public:
     void
     dispatch_impl( const std::string& thread_pool_name,
                    Object* object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                    Args&&... args )
     {
         auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
@@ -141,7 +141,7 @@ public:
     void
     dispatch_impl( const std::string& thread_pool_name,
                    const std::shared_ptr< Object >& object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                    Args&&... args )
     {
         auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
@@ -154,7 +154,7 @@ public:
     void
     dispatch_impl( const std::string& thread_pool_name,
                    const std::shared_ptr< Object >& object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                    Args&&... args )
     {
         auto task = create_task_ptr( object, f, std::forward< Args >( args )... );
@@ -182,7 +182,7 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               Object* object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                               Args&&... args )
     {
         auto& thread_pool = find_thread_pool( thread_pool_name );
@@ -199,7 +199,7 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               Object* object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                               Args&&... args )
     {
         auto& thread_pool = find_thread_pool( thread_pool_name );
@@ -238,7 +238,7 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               const std::shared_ptr< Object >& object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                               Args&&... args )
     {
         auto& thread_pool = find_thread_pool( thread_pool_name );
@@ -255,7 +255,7 @@ public:
     bool
     dispatch_or_execute_impl( const std::string& thread_pool_name,
                               const std::shared_ptr< Object >& object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                               Args&&... args )
     {
         auto& thread_pool = find_thread_pool( thread_pool_name );

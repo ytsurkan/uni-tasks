@@ -25,7 +25,7 @@ auto create_task( F&& f, Args&&... args );
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 auto create_task( Object* object,
-                  MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                  MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                   Args&&... args );
 
 /**
@@ -39,7 +39,7 @@ auto create_task( Object* object,
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 auto create_task( Object* object,
-                  MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                  MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                   Args&&... args );
 
 /**
@@ -73,7 +73,7 @@ auto create_task( Object* object, ConstMemberFnPtr< Object, R, Params... > f, Ar
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 auto create_task( const std::shared_ptr< Object >& object,
-                  MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                  MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                   Args&&... args );
 
 /**
@@ -87,7 +87,7 @@ auto create_task( const std::shared_ptr< Object >& object,
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 auto create_task( const std::shared_ptr< Object >& object,
-                  MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                  MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                   Args&&... args );
 
 /**
@@ -135,7 +135,7 @@ std::unique_ptr< ITask > create_task_ptr( F&& f, Args&&... args );
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask > create_task_ptr( Object* object,
-                                          MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                                          MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                                           Args&&... args );
 
 /**
@@ -148,9 +148,8 @@ std::unique_ptr< ITask > create_task_ptr( Object* object,
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask > create_task_ptr( Object* object,
-                                          MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
-                                          Args&&... args );
+std::unique_ptr< ITask > create_task_ptr(
+    Object* object, MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f, Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.
@@ -187,7 +186,7 @@ std::unique_ptr< ITask > create_task_ptr( Object* object,
  */
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
-                                          MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                                          MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                                           Args&&... args );
 
 /**
@@ -200,9 +199,10 @@ std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& objec
  * @return Unique pointer to task object.
  */
 template < typename Object, typename R, typename... Params, typename... Args >
-std::unique_ptr< ITask > create_task_ptr( const std::shared_ptr< Object >& object,
-                                          MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
-                                          Args&&... args );
+std::unique_ptr< ITask > create_task_ptr(
+    const std::shared_ptr< Object >& object,
+    MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+    Args&&... args );
 
 /**
  * This factory function is used to call non overloaded member functions.

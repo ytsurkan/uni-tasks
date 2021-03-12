@@ -43,7 +43,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 void
 TaskDispatcher::dispatch( const std::string& thread_pool_name,
                           Object* object,
-                          MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                          MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                           Args&&... args )
 {
     m_impl.dispatch_impl( thread_pool_name, object, f, std::forward< Args >( args )... );
@@ -53,7 +53,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 void
 TaskDispatcher::dispatch( const std::string& thread_pool_name,
                           Object* object,
-                          MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                          MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                           Args&&... args )
 {
     m_impl.dispatch_impl( thread_pool_name, object, f, std::forward< Args >( args )... );
@@ -63,7 +63,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 void
 TaskDispatcher::dispatch( const std::string& thread_pool_name,
                           const std::shared_ptr< Object >& object,
-                          MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                          MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                           Args&&... args )
 {
     m_impl.dispatch_impl( thread_pool_name, object, f, std::forward< Args >( args )... );
@@ -73,7 +73,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 void
 TaskDispatcher::dispatch( const std::string& thread_pool_name,
                           const std::shared_ptr< Object >& object,
-                          MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                          MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                           Args&&... args )
 {
     m_impl.dispatch_impl( thread_pool_name, object, f, std::forward< Args >( args )... );
@@ -91,7 +91,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 bool
 TaskDispatcher::dispatch_or_execute( const std::string& thread_pool_name,
                                      Object* object,
-                                     MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                                     MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                                      Args&&... args )
 {
     return m_impl.dispatch_or_execute_impl(
@@ -102,7 +102,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 bool
 TaskDispatcher::dispatch_or_execute( const std::string& thread_pool_name,
                                      Object* object,
-                                     MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                                     MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                                      Args&&... args )
 {
     return m_impl.dispatch_or_execute_impl(
@@ -135,7 +135,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 bool
 TaskDispatcher::dispatch_or_execute( const std::string& thread_pool_name,
                                      const std::shared_ptr< Object >& object,
-                                     MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                                     MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                                      Args&&... args )
 {
     return m_impl.dispatch_or_execute_impl(
@@ -146,7 +146,7 @@ template < typename Object, typename R, typename... Params, typename... Args >
 bool
 TaskDispatcher::dispatch_or_execute( const std::string& thread_pool_name,
                                      const std::shared_ptr< Object >& object,
-                                     MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                                     MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                                      Args&&... args )
 {
     return m_impl.dispatch_or_execute_impl(

@@ -14,7 +14,7 @@ create_task( F&& f, Args&&... args )
 
 template < typename Object, typename R, typename... Params, typename... Args >
 auto
-create_task( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) > f, Args&&... args )
+create_task( Object* object, MemberFnPtrWrapper< R ( Object::* )( Params... ) > f, Args&&... args )
 {
     return details::create_task_impl( object, *f, std::forward< Args >( args )... );
 }
@@ -22,7 +22,7 @@ create_task( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) > f, 
 template < typename Object, typename R, typename... Params, typename... Args >
 auto
 create_task( Object* object,
-             MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+             MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
              Args&&... args )
 {
     return details::create_task_impl( object, *f, std::forward< Args >( args )... );
@@ -45,7 +45,7 @@ create_task( Object* object, ConstMemberFnPtr< Object, R, Params... > f, Args&&.
 template < typename Object, typename R, typename... Params, typename... Args >
 auto
 create_task( const std::shared_ptr< Object >& object,
-             MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+             MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
              Args&&... args )
 {
     return details::create_task_impl( object, *f, std::forward< Args >( args )... );
@@ -54,7 +54,7 @@ create_task( const std::shared_ptr< Object >& object,
 template < typename Object, typename R, typename... Params, typename... Args >
 auto
 create_task( const std::shared_ptr< Object >& object,
-             MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+             MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
              Args&&... args )
 {
     return details::create_task_impl( object, *f, std::forward< Args >( args )... );
@@ -88,7 +88,9 @@ create_task_ptr( F&& f, Args&&... args )
 
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask >
-create_task_ptr( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) > f, Args&&... args )
+create_task_ptr( Object* object,
+                 MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                 Args&&... args )
 {
     return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );
 }
@@ -96,7 +98,7 @@ create_task_ptr( Object* object, MemFnPtrWrapper< R ( Object::* )( Params... ) >
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask >
 create_task_ptr( Object* object,
-                 MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                 MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                  Args&&... args )
 {
     return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );
@@ -112,7 +114,7 @@ create_task_ptr( Object* object, ConstMemberFnPtr< Object, R, Params... > f, Arg
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask >
 create_task_ptr( const std::shared_ptr< Object >& object,
-                 MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                 MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                  Args&&... args )
 {
     return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );
@@ -121,7 +123,7 @@ create_task_ptr( const std::shared_ptr< Object >& object,
 template < typename Object, typename R, typename... Params, typename... Args >
 std::unique_ptr< ITask >
 create_task_ptr( const std::shared_ptr< Object >& object,
-                 MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                 MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                  Args&&... args )
 {
     return details::create_task_ptr_impl( object, *f, std::forward< Args >( args )... );

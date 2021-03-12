@@ -109,7 +109,7 @@ TEST_F( TasksTest, test_create_task_for_overloaded_memfn )
     /// therefore the function prototype of overloaded function should be explicitly specified.
     uni::ITask&& task = uni::create_task(
         &foo,
-        uni::MemFnPtrWrapper< void ( FakeWorker::* )( int, int ) >( &FakeWorker::do_1 ),
+        uni::MemberFnPtrWrapper< void ( FakeWorker::* )( int, int ) >( &FakeWorker::do_1 ),
         42,
         1 );
     task.run( );
@@ -126,7 +126,7 @@ TEST_F( TasksTest, test_create_task_for_memfn )
         /// therefore the function prototype of overloaded function should be explicitly specified.
         const auto task = uni::create_task_ptr(
             &foo,
-            uni::MemFnPtrWrapper< void ( FakeWorker::* )( int, int ) >( &FakeWorker::do_1 ),
+            uni::MemberFnPtrWrapper< void ( FakeWorker::* )( int, int ) >( &FakeWorker::do_1 ),
             42,
             1 );
 

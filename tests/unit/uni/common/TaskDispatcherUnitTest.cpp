@@ -198,7 +198,7 @@ TEST_F( TaskDispatcherTest, test_execute_const_memfn )
             const bool executed = dispatcher.dispatch_or_execute(
                 "background",
                 &foo,
-                uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+                uni::MemberFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
                     &FakeWorker::do_2 ),
                 x,
                 y );
@@ -226,7 +226,7 @@ TEST_F( TaskDispatcherTest, test_dispatch_const_memfn )
         const bool executed = dispatcher.dispatch_or_execute(
             "background",
             &foo1,
-            uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+            uni::MemberFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
                 &FakeWorker::do_2 ),
             a,
             b );
@@ -235,7 +235,7 @@ TEST_F( TaskDispatcherTest, test_dispatch_const_memfn )
         dispatcher.dispatch(
             "background",
             &foo2,
-            uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+            uni::MemberFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
                 &FakeWorker::do_2 ),
             a,
             b );
@@ -295,7 +295,7 @@ TEST_F( TaskDispatcherTest, test_execute_const_memfn_of_sharedptr_object )
             const bool executed = dispatcher.dispatch_or_execute(
                 "background",
                 sp,
-                uni::MemFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
+                uni::MemberFnPtrWrapper< void ( FakeWorker::* )( int32_t, int32_t ) const >(
                     &FakeWorker::do_2 ),
                 x,
                 y );

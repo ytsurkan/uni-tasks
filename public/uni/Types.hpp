@@ -18,7 +18,7 @@ template < typename Object, typename R, typename... Args >
 using ConstMemberFnPtr = R ( Object::* )( Args... ) const;
 
 /**
- * The rationale for why the MemFnPtrWrapper was created.
+ * The rationale for why the MemberFnPtrWrapper was created.
  * void f1( int ) {}
  * void f1( int, int ) { }
  * std::function< decltype( f1 ) > func;
@@ -28,14 +28,14 @@ using ConstMemberFnPtr = R ( Object::* )( Args... ) const;
  * std::function< void( int ) > func;
  */
 template < typename F >
-struct MemFnPtrWrapper;
+struct MemberFnPtrWrapper;
 
 template < typename Object, typename R, typename... Args >
-struct MemFnPtrWrapper< R ( Object::* )( Args... ) >
+struct MemberFnPtrWrapper< R ( Object::* )( Args... ) >
 {
     using Type = R ( Object::* )( Args... );
 
-    MemFnPtrWrapper( Type ptr )
+    MemberFnPtrWrapper( Type ptr )
         : m_ptr{ptr}
     {
     }
@@ -50,11 +50,11 @@ private:
 };
 
 template < typename Object, typename R, typename... Args >
-struct MemFnPtrWrapper< R ( Object::* )( Args... ) const >
+struct MemberFnPtrWrapper< R ( Object::* )( Args... ) const >
 {
     using Type = R ( Object::* )( Args... ) const;
 
-    MemFnPtrWrapper( Type ptr )
+    MemberFnPtrWrapper( Type ptr )
         : m_ptr{ptr}
     {
     }

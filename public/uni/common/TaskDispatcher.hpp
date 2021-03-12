@@ -48,25 +48,25 @@ public:
     template < typename Object, typename R, typename... Params, typename... Args >
     void dispatch( const std::string& thread_pool_name,
                    Object* object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                    Args&&... args );
 
     template < typename Object, typename R, typename... Params, typename... Args >
     void dispatch( const std::string& thread_pool_name,
                    Object* object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                    Args&&... args );
 
     template < typename Object, typename R, typename... Params, typename... Args >
     void dispatch( const std::string& thread_pool_name,
                    const std::shared_ptr< Object >& object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                    Args&&... args );
 
     template < typename Object, typename R, typename... Params, typename... Args >
     void dispatch( const std::string& thread_pool_name,
                    const std::shared_ptr< Object >& object,
-                   MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                   MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                    Args&&... args );
 
     template < typename F, typename... Args >
@@ -75,13 +75,13 @@ public:
     template < typename Object, typename R, typename... Params, typename... Args >
     bool dispatch_or_execute( const std::string& thread_pool_name,
                               Object* object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                               Args&&... args );
 
     template < typename Object, typename R, typename... Params, typename... Args >
     bool dispatch_or_execute( const std::string& thread_pool_name,
                               Object* object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                               Args&&... args );
 
     template < typename Object, typename R, typename... Params, typename... Args >
@@ -99,13 +99,13 @@ public:
     template < typename Object, typename R, typename... Params, typename... Args >
     bool dispatch_or_execute( const std::string& thread_pool_name,
                               const std::shared_ptr< Object >& object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) > f,
                               Args&&... args );
 
     template < typename Object, typename R, typename... Params, typename... Args >
     bool dispatch_or_execute( const std::string& thread_pool_name,
                               const std::shared_ptr< Object >& object,
-                              MemFnPtrWrapper< R ( Object::* )( Params... ) const > f,
+                              MemberFnPtrWrapper< R ( Object::* )( Params... ) const > f,
                               Args&&... args );
 
     template < typename Object, typename R, typename... Params, typename... Args >
