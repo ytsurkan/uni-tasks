@@ -1,7 +1,7 @@
 project( uni-tasks-integrationtests )
 
 set( HEADERS
-    ""
+    "uni/common/ThreadPoolConfiguration.hpp"
 )
 
 set( SOURCES

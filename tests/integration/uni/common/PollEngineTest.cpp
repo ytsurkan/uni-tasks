@@ -4,8 +4,8 @@
 #include <gtest/gtest.h>
 
 #include "uni/common/PollEngine.hpp"
-#include "uni/common/Runtime.hpp"
-
+#include "uni/common/RuntimeFactory.hpp"
+#include "uni/common/ThreadPoolConfiguration.hpp"
 
 namespace integration
 {
@@ -21,12 +21,13 @@ class PollEngineTest : public ::testing::Test
 }  // namespace uni
 }  // namespace integration
 
+using integration::uni::common::get_default_thread_pool_configuration;
 using integration::uni::common::PollEngineTest;
 
 TEST_F( PollEngineTest, test_poll_engine_callback )
 {
-    auto runtime = std::make_shared< uni::common::Runtime >( );
-    runtime->task_dispatcher( ).start( );
+    auto runtime = ::uni::common::create_runtime( get_default_thread_pool_configuration( ) );
+    runtime.task_dispatcher_basic( ).start( );
 
     {
         uni::common::PollEngine poll_engine( runtime, "background" );
@@ -70,5 +71,5 @@ TEST_F( PollEngineTest, test_poll_engine_callback )
             ASSERT_LE( diff, DELTA_MS );
         }
     }
-    runtime->task_dispatcher( ).stop( );
+    runtime.task_dispatcher_basic( ).stop( );
 }

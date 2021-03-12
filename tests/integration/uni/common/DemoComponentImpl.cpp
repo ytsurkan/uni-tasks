@@ -1,8 +1,8 @@
 #include "uni/common/DemoComponentImpl.hpp"
 
 #include "uni/common/DemoComponentListener.hpp"
-#include "uni/common/Request.hpp"
-#include "uni/common/Runtime.hpp"
+#include "uni/common/RequestFactory.hpp"
+#include "uni/utils/Utils.hpp"
 
 namespace integration
 {
@@ -10,7 +10,7 @@ namespace uni
 {
 namespace common
 {
-DemoComponentImpl::DemoComponentImpl( ::uni::common::Runtime& runtime,
+DemoComponentImpl::DemoComponentImpl( const ::uni::common::Runtime& runtime,
                                       DemoComponentListener& listener )
     : m_runtime{runtime}
     , m_listener{listener}
@@ -42,7 +42,7 @@ DemoComponentImpl::calculate_1_impl( int p1, const std::string& p2 )
 std::shared_future< void >
 DemoComponentImpl::schedule_calculate_1( ::uni::RequestId id, int p1, const std::string& p2 )
 {
-    auto& dispatcher = m_runtime.task_dispatcher( );
+    auto& dispatcher = m_runtime.task_dispatcher_basic( );
     auto task = ::uni::create_task_ptr( this, &DemoComponentImpl::do_calculate_1, id, p1, p2 );
     auto future = task->get_future( );
     dispatcher.dispatch( "background", id, std::move( task ) );
@@ -52,12 +52,12 @@ DemoComponentImpl::schedule_calculate_1( ::uni::RequestId id, int p1, const std:
 void
 DemoComponentImpl::do_calculate_1( ::uni::RequestId id, int32_t p1, const std::string& p2 )
 {
-    m_runtime.task_dispatcher( ).assert_execution_context( "background" );
+    m_runtime.task_dispatcher_basic( ).assert_execution_context( "background" );
 
-    m_runtime.task_dispatcher( ).dispatch(
+    m_runtime.task_dispatcher_basic( ).dispatch(
         "client", &m_listener, &DemoComponentListener::on_calculate_started, id );
 
-    auto& dispatcher = m_runtime.task_dispatcher( );
+    auto& dispatcher = m_runtime.task_dispatcher_basic( );
     const bool executed = dispatcher.dispatch_or_execute(
         "background", this, &DemoComponentImpl::do_calculate_1_internal, id, p1 );
 
@@ -75,11 +75,11 @@ DemoComponentImpl::do_calculate_1( ::uni::RequestId id, int32_t p1, const std::s
         }
         poll_calculate_1( );
 
-        m_runtime.task_dispatcher( ).dispatch(
+        m_runtime.task_dispatcher_basic( ).dispatch(
             "client", &m_listener, &DemoComponentListener::on_calculate_progress, id, counter );
     }
 
-    m_runtime.task_dispatcher( ).dispatch(
+    m_runtime.task_dispatcher_basic( ).dispatch(
         "client", &m_listener, &DemoComponentListener::on_calculation_done, id, p1, p2, status );
 
     reset_calculate_1( );
@@ -130,7 +130,7 @@ DemoComponentImpl::schedule_cancel_calculate_1( ::uni::RequestId id,
             task_future.wait( );
         }
     };
-    m_runtime.task_dispatcher( ).cancel( "background", id, std::move( task ) );
+    m_runtime.task_dispatcher_basic( ).cancel( "background", id, std::move( task ) );
 }
 
 std::weak_ptr< DemoComponentImpl >

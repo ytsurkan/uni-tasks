@@ -1,19 +1,13 @@
 #include "uni/common/PollEngine.hpp"
 
-#include "uni/common/Runtime.hpp"
-
 namespace uni
 {
 namespace common
 {
-PollEngine::PollEngine( std::shared_ptr< Runtime > runtime, const std::string& thread_pool_name )
-    : m_runtime{std::move( runtime )}
+PollEngine::PollEngine( const Runtime& runtime, const std::string& thread_pool_name )
+    : m_runtime{runtime}
     , m_thread_pool_name{thread_pool_name}
 {
-    if ( nullptr == m_runtime )
-    {
-        throw std::logic_error( "Invalid runtime parameter" );
-    }
 }
 
 void
@@ -27,7 +21,8 @@ void
 PollEngine::stop( )
 {
     m_running = false;
-    m_runtime->task_dispatcher( ).cancel_pending( m_thread_pool_name, m_poll_request_id.load( ) );
+    m_runtime.task_dispatcher_basic( ).cancel_pending( m_thread_pool_name,
+                                                       m_poll_request_id.load( ) );
 }
 
 void
@@ -39,7 +34,7 @@ PollEngine::set_poll_interval( TimeInterval poll_interval_ms )
 void
 PollEngine::poll( )
 {
-    m_runtime->task_dispatcher( ).assert_execution_context( m_thread_pool_name );
+    m_runtime.task_dispatcher_basic( ).assert_execution_context( m_thread_pool_name );
 
     if ( !m_running )
     {
@@ -56,7 +51,7 @@ PollEngine::poll( )
 void
 PollEngine::run( )
 {
-    auto& dispatcher = m_runtime->task_dispatcher( );
+    auto& dispatcher = m_runtime.task_dispatcher_basic( );
     auto task = uni::create_task_ptr( this, &PollEngine::poll );
     task->set_due_time( m_poll_interval_ms );
     m_poll_request_id = utils::create_request_id( );

@@ -10,8 +10,7 @@ class TaskDispatcherBasic
 {
 public:
     explicit TaskDispatcherBasic(
-        const std::vector< std::tuple< std::string, size_t > >& thread_pool_configurations
-        = {{"background", 7}, {"client", 1}} );
+        const std::vector< std::tuple< std::string, size_t > >& thread_pool_configurations );
 
     void start( );
     void stop( );

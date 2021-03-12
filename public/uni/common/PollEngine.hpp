@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "uni/Types.hpp"
+#include "uni/common/Runtime.hpp"
 
 namespace uni
 {
@@ -18,7 +19,7 @@ class PollEngine
 public:
     using Callback = std::function< void( ) >;
 
-    PollEngine( std::shared_ptr< Runtime > runtime, const std::string& thread_pool_name );
+    PollEngine( const Runtime& runtime, const std::string& thread_pool_name );
     void start( );
     void stop( );
     void set_poll_interval( TimeInterval poll_interval_ms );
@@ -31,7 +32,7 @@ private:
     void run( );
 
 private:
-    std::shared_ptr< Runtime > const m_runtime{nullptr};
+    Runtime m_runtime;
     const std::string m_thread_pool_name{};
     std::atomic< TimeInterval > m_poll_interval_ms{0u};
     std::atomic< bool > m_running{false};

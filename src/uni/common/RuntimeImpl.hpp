@@ -6,24 +6,16 @@ namespace uni
 {
 namespace common
 {
-class RuntimeImpl;
-}  // namespace common
-}  // namespace uni
-
-namespace uni
-{
-namespace common
-{
-class Runtime
+class RuntimeImpl
 {
 public:
-    explicit Runtime(
+    explicit RuntimeImpl(
         const std::vector< std::tuple< std::string, size_t > >& thread_pool_configurations );
 
-    TaskDispatcherBasic& task_dispatcher_basic( );
+    TaskDispatcherBasic& task_dispatcher_basic_impl( );
 
 private:
-    std::shared_ptr< RuntimeImpl > m_impl;
+    TaskDispatcherBasic m_dispatcher;
 };
 
 }  // namespace common

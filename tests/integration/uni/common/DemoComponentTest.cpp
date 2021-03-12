@@ -1,6 +1,7 @@
 #include "uni/common/DemoComponentImpl.hpp"
 #include "uni/common/DemoComponentListener.hpp"
-#include "uni/common/Runtime.hpp"
+#include "uni/common/RuntimeFactory.hpp"
+#include "uni/common/ThreadPoolConfiguration.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -22,10 +23,10 @@ class DemoComponentTest : public ::testing::Test
 class TestDemoComponentListener : public ::integration::uni::common::DemoComponentListener
 {
 public:
-    explicit TestDemoComponentListener( uni::common::Runtime& runtime )
+    explicit TestDemoComponentListener( const ::uni::common::Runtime& runtime )
         : m_runtime{runtime}
-        , m_calculation_done_wait( m_calculation_done_notify.get_future( ) )
-        , m_calculation_started_wait( m_calculation_started_notify.get_future( ) )
+        , m_calculation_done_wait{m_calculation_done_notify.get_future( )}
+        , m_calculation_started_wait{m_calculation_started_notify.get_future( )}
     {
     }
 
@@ -48,7 +49,7 @@ public:
     void
     on_calculate_started( uni::RequestId id ) override
     {
-        m_runtime.task_dispatcher( ).assert_execution_context( "client" );
+        m_runtime.task_dispatcher_basic( ).assert_execution_context( "client" );
 
         UNUSED( id );
 
@@ -58,7 +59,7 @@ public:
     void
     on_calculate_progress( uni::RequestId id, size_t progress ) override
     {
-        m_runtime.task_dispatcher( ).assert_execution_context( "client" );
+        m_runtime.task_dispatcher_basic( ).assert_execution_context( "client" );
 
         UNUSED( id );
         UNUSED( progress );
@@ -70,7 +71,7 @@ public:
                          const std::string& result2,
                          bool status ) override
     {
-        m_runtime.task_dispatcher( ).assert_execution_context( "client" );
+        m_runtime.task_dispatcher_basic( ).assert_execution_context( "client" );
 
         m_id = id;
         m_result1 = result1;
@@ -81,7 +82,7 @@ public:
     }
 
 private:
-    uni::common::Runtime& m_runtime;
+    ::uni::common::Runtime m_runtime;
     std::promise< void > m_calculation_done_notify;
     std::future< void > m_calculation_done_wait;
     std::promise< void > m_calculation_started_notify;
@@ -95,13 +96,16 @@ public:
 };
 
 using integration::uni::common::DemoComponentTest;
+using integration::uni::common::get_default_thread_pool_configuration;
 
 TEST_F( DemoComponentTest, test_demo_component_calculate_1 )
 {
     using integration::uni::common::DemoComponentImpl;
 
-    uni::common::Runtime runtime;
-    runtime.task_dispatcher( ).start( );
+    uni::common::Runtime runtime
+        = uni::common::create_runtime( get_default_thread_pool_configuration( ) );
+
+    runtime.task_dispatcher_basic( ).start( );
 
     TestDemoComponentListener listener{runtime};
     const auto component = std::make_shared< DemoComponentImpl >( runtime, listener );
@@ -111,7 +115,7 @@ TEST_F( DemoComponentTest, test_demo_component_calculate_1 )
 
     listener.wait_on_calculation_done( );
 
-    runtime.task_dispatcher( ).stop( );
+    runtime.task_dispatcher_basic( ).stop( );
 
     ASSERT_EQ( listener.m_id, id );
     ASSERT_EQ( listener.m_result1, 2 );
@@ -123,8 +127,9 @@ TEST_F( DemoComponentTest, test_demo_component_cancel_calculate_1 )
 {
     using integration::uni::common::DemoComponentImpl;
 
-    uni::common::Runtime runtime;
-    runtime.task_dispatcher( ).start( );
+    uni::common::Runtime runtime
+        = uni::common::create_runtime( get_default_thread_pool_configuration( ) );
+    runtime.task_dispatcher_basic( ).start( );
 
     TestDemoComponentListener listener{runtime};
     const auto component = std::make_shared< DemoComponentImpl >( runtime, listener );
@@ -139,7 +144,7 @@ TEST_F( DemoComponentTest, test_demo_component_cancel_calculate_1 )
 
     listener.wait_on_calculation_done( );
 
-    runtime.task_dispatcher( ).stop( );
+    runtime.task_dispatcher_basic( ).stop( );
 
     ASSERT_EQ( listener.m_id, id );
     ASSERT_EQ( listener.m_result1, 10 * 15 );
