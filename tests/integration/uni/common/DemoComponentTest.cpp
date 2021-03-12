@@ -102,8 +102,7 @@ TEST_F( DemoComponentTest, test_demo_component_calculate_1 )
 {
     using integration::uni::common::DemoComponentImpl;
 
-    uni::common::Runtime runtime
-        = uni::common::create_runtime( get_default_thread_pool_configuration( ) );
+    auto runtime = uni::common::create_runtime( get_default_thread_pool_configuration( ) );
 
     runtime.task_dispatcher_basic( ).start( );
 
@@ -127,8 +126,7 @@ TEST_F( DemoComponentTest, test_demo_component_cancel_calculate_1 )
 {
     using integration::uni::common::DemoComponentImpl;
 
-    uni::common::Runtime runtime
-        = uni::common::create_runtime( get_default_thread_pool_configuration( ) );
+    auto runtime = uni::common::create_runtime( get_default_thread_pool_configuration( ) );
     runtime.task_dispatcher_basic( ).start( );
 
     TestDemoComponentListener listener{runtime};

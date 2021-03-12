@@ -40,6 +40,8 @@ set( SOURCES
     "src/uni/common/RuntimeImpl.hpp"
     "src/uni/common/RuntimeImpl.cpp"
     "src/uni/common/Runtime.cpp"
+    "src/uni/common/PollEngineImpl.hpp"
+    "src/uni/common/PollEngineImpl.cpp"
     "src/uni/common/PollEngine.cpp"
     "src/uni/common/TaskDispatcher.cpp"
     "src/uni/common/TaskDispatcherBasic.cpp"
