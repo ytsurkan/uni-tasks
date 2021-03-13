@@ -1,7 +1,7 @@
 #pragma once
 
-#include "uni/tasks/MemberFnTask.hpp"
-#include "uni/tasks/Task.hpp"
+#include "uni/tasks/details/MemberFnTask.hpp"
+#include "uni/tasks/details/Task.hpp"
 
 namespace uni
 {

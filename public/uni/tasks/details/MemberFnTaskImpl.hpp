@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uni/tasks/TaskBaseImpl.hpp"
+#include "uni/tasks/details/TaskBaseImpl.hpp"
 
 namespace uni
 {

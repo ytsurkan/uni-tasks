@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uni/tasks/TaskFactoryBasic.inl"
+#include "uni/tasks/details/TaskFactoryBasic.inl"
 
 namespace uni
 {

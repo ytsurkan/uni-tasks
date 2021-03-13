@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uni/common/TaskDispatcherImpl.hpp"
+#include "uni/common/details/TaskDispatcherImpl.hpp"
 
 namespace uni
 {
@@ -127,4 +127,4 @@ private:
 }  // namespace common
 }  // namespace uni
 
-#include "uni/common/TaskDispatcher.inl"
+#include "uni/common/details/TaskDispatcher.inl"

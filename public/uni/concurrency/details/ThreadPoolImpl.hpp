@@ -5,7 +5,7 @@
 
 #include "uni/Types.hpp"
 #include "uni/concurrency/Queue.hpp"
-#include "uni/tasks/TaskUtils.hpp"
+#include "uni/tasks/details/TaskUtils.hpp"
 #include "uni/utils/Utils.hpp"
 
 // TODO: remove iostream

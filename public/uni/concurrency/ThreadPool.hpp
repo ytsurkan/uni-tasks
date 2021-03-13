@@ -1,6 +1,6 @@
 #pragma once
 
-#include "uni/concurrency/ThreadPoolImpl.hpp"
+#include "uni/concurrency/details/ThreadPoolImpl.hpp"
 
 namespace uni
 {
