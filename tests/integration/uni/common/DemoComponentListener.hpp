@@ -37,6 +37,8 @@ public:
         UNUSED( result2 );
         UNUSED( status );
     }
+
+    virtual ~DemoComponentListener() = default;
 };
 
 }  // namespace common

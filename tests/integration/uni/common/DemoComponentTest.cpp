@@ -25,7 +25,9 @@ class TestDemoComponentListener : public ::integration::uni::common::DemoCompone
 public:
     explicit TestDemoComponentListener( const ::uni::common::Runtime& runtime )
         : m_runtime{runtime}
+        , m_calculation_done_notify{}
         , m_calculation_done_wait{m_calculation_done_notify.get_future( )}
+        , m_calculation_started_notify{}
         , m_calculation_started_wait{m_calculation_started_notify.get_future( )}
     {
     }
@@ -91,7 +93,7 @@ private:
 public:
     uni::RequestId m_id{0};
     int m_result1{0};
-    std::string m_result2;
+    std::string m_result2{};
     bool m_status{false};
 };
 
