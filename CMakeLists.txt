@@ -5,9 +5,7 @@ project( uni-tasks )
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 include(bootstrap)
-include(FetchContent)
-
-include(CMakePrintHelpers)
+#include(CMakePrintHelpers)
 
 uni_cmake_set_cxxstd(17)
 
@@ -93,21 +91,8 @@ target_link_libraries( ${PROJECT_NAME}
 )
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
-    FetchContent_Declare(
-      googletest
-      GIT_REPOSITORY https://github.com/google/googletest.git
-      GIT_TAG        release-1.10.0
-    )
-
-    FetchContent_GetProperties(googletest)
-
-    if(NOT googletest_POPULATED)
-      FetchContent_Populate(googletest)
-      add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
-    endif()
-
-    cmake_print_variables(googletest_SOURCE_DIR SOURCE_DIR BUILD_DIR)
-
+    fetch_googletest()
+#    cmake_print_variables(googletest_SOURCE_DIR SOURCE_DIR BUILD_DIR)
     add_subdirectory( tests )
 endif()
 
