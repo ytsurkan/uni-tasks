@@ -18,8 +18,8 @@ public:
     ~TaskImpl( ) override = default;
     TaskImpl( const TaskImpl& ) = delete;
     TaskImpl& operator=( const TaskImpl& ) = delete;
-    TaskImpl( TaskImpl&& ) noexcept = default;
-    TaskImpl& operator=( TaskImpl&& ) noexcept = default;
+    TaskImpl( TaskImpl&& ) = default;
+    TaskImpl& operator=( TaskImpl&& ) = default;
 
 private:
     void

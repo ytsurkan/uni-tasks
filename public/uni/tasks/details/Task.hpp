@@ -28,8 +28,8 @@ public:
     ~Task( ) override = default;
     Task( const Task& ) = delete;
     Task& operator=( const Task& ) = delete;
-    Task( Task&& ) noexcept = default;
-    Task& operator=( Task&& ) noexcept = default;
+    Task( Task&& ) = default;
+    Task& operator=( Task&& ) = default;
 
 private:
     /// ITask interface implementation
