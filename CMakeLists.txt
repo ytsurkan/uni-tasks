@@ -92,6 +92,10 @@ target_link_libraries( ${PROJECT_NAME}
 
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     fetch_googletest()
+    if(NOT googletest_POPULATED)
+       FetchContent_Populate(googletest)
+       add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+    endif()
 #    cmake_print_variables(googletest_SOURCE_DIR SOURCE_DIR BUILD_DIR)
     add_subdirectory( tests )
 endif()
