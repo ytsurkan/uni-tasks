@@ -1,4 +1,27 @@
+cmake_minimum_required( VERSION 3.11 )
+
 project( uni-tasks )
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
+include(bootstrap)
+include(FetchContent)
+
+include(CMakePrintHelpers)
+
+uni_cmake_set_cxxstd(17)
+
+set( SOURCE_DIR "${CMAKE_SOURCE_DIR}" )
+set( BUILD_DIR "${CMAKE_BINARY_DIR}" )
+set( INSTALL_DIR "${BUILD_DIR}/install" )
+
+set( CMAKE_INSTALL_BINDIR bin )
+set( CMAKE_INSTALL_DOCDIR doc )
+set( CMAKE_INSTALL_INCLUDEDIR include )
+set( CMAKE_INSTALL_LIBDIR lib )
+
+set( CMAKE_INSTALL_PREFIX ${INSTALL_DIR} )
+set( CMAKE_INSTALL_RPATH ${INSTALL_DIR}/${CMAKE_INSTALL_LIBDIR} )
 
 set( HEADERS
     "public/uni/Types.hpp"
@@ -52,25 +75,42 @@ set( SOURCES
     "src/uni/utils/Utils.cpp"
 )
 
-#treat_all_warnings_as_errors()
-
 add_library( ${PROJECT_NAME} STATIC
     ${HEADERS}
     ${SOURCES}
 )
 
-
 target_include_directories( ${PROJECT_NAME}
     PUBLIC
-        ${SOURCE_DIR}/uni-tasks/public
+        ${SOURCE_DIR}/public
     PRIVATE
-        ${SOURCE_DIR}/uni-tasks/src
+        ${SOURCE_DIR}/src
 )
 
 target_link_libraries( ${PROJECT_NAME}
     PRIVATE
         ${CMAKE_THREAD_LIBS_INIT}
 )
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    FetchContent_Declare(
+      googletest
+      GIT_REPOSITORY https://github.com/google/googletest.git
+      GIT_TAG        release-1.10.0
+    )
+
+    FetchContent_GetProperties(googletest)
+
+    if(NOT googletest_POPULATED)
+      FetchContent_Populate(googletest)
+      add_subdirectory(${googletest_SOURCE_DIR} ${googletest_BINARY_DIR})
+    endif()
+
+    cmake_print_variables(googletest_SOURCE_DIR SOURCE_DIR BUILD_DIR)
+
+    add_subdirectory( tests )
+endif()
+
 
 install( TARGETS ${PROJECT_NAME}
     ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
@@ -79,16 +119,7 @@ install( TARGETS ${PROJECT_NAME}
 )
 
 # The trailing slash is important
-install( DIRECTORY ${CMAKE_INSTALL_INCLUDEDIR}/
-         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+install(DIRECTORY ${SOURCE_DIR}/public/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+        FILES_MATCHING PATTERN "*.hpp"
 )
-
-add_subdirectory( tests )
-
-#if( CODE_COVERAGE )
-#    generate_coverage( ${PROJECT_NAME} ${PROJECT_NAME}-integrationtests)
-
-#    install( DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${COVERAGE_OUTPUT_DIR_NAME}/
-#             DESTINATION ${CMAKE_INSTALL_DOCDIR}/uni/common
-#    )
-#endif( )
