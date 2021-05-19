@@ -17,13 +17,13 @@ class DemoComponentListener
 {
 public:
     virtual void
-    on_calculate_started( ::uni::RequestId id )
+    on_calculation_started( ::uni::RequestId id )
     {
         UNUSED( id );
     }
 
     virtual void
-    on_calculate_progress( ::uni::RequestId id, size_t progress )
+    on_calculation_progress( ::uni::RequestId id, size_t progress )
     {
         UNUSED( id );
         UNUSED( progress );
