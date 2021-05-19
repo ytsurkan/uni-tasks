@@ -1,6 +1,6 @@
 # uni-tasks
 
-Basic implementation of task-based concurrency library.
+Basic implementation of task-based concurrency library. It can be used as a building block for components which support asynchronous operations (e.g. DemoComponentTest.cpp).
 
 #### Building instructions
 1. Clone repository.
@@ -32,4 +32,4 @@ Basic implementation of task-based concurrency library.
     thread_pool.add_task( std::move( task ) );
     thread_pool.stop( );
     
-More usage examples are covered in integration and unit tests (e.g. DemoComponentTest.cpp, PollEngineTest.cpp, ThreadPoolUnitTest.cpp).
+_More usage examples are covered in integration and unit tests (e.g. DemoComponentTest.cpp, PollEngineTest.cpp, ThreadPoolUnitTest.cpp)._
